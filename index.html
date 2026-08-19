@@ -222,12 +222,12 @@
       </div>
       <div class="sndgrid">
         <button onclick="speak('water',0.75,this)"><b>water</b><i>워러 · 유음</i></button>
-        <button onclick="speak('Can I get a burger?',0.8,this)"><b>Can I get a</b><i>캐나이 게러 · 연음</i></button>
+        <button onclick="speakSlow('Can I get a burger',this)"><b>Can I get a</b><i>캐나이 게러 · 연음</i></button>
         <button onclick="speak('medium',0.75,this)"><b>medium</b><i>미리엄 · 유음</i></button>
         <button onclick="speak('shuttle',0.75,this)"><b>shuttle</b><i>셔를 · 유음</i></button>
         <button onclick="speak('thanks',0.7,this)"><b>thanks</b><i>혀를 앞니 사이 · TH</i></button>
         <button onclick="speak('with',0.7,this)"><b>with</b><i>혀를 앞니 사이 · TH</i></button>
-        <button onclick="speak('He has it',0.7,this)"><b>He has it</b><i>히 해짓 · H 약하게</i></button>
+        <button onclick="speakSlow('He has it',this)"><b>He has it</b><i>히 해짓 · H 약하게</i></button>
         <button onclick="speak('cheese',0.7,this)"><b>cheese</b><i>치이즈 · 모음 길게</i></button>
       </div>
       <button class="btn mini" onclick="soundTest(this)">🔈 소리가 안 나면 여기를 누르세요</button>
@@ -350,10 +350,40 @@ function pickVoice(){var pref=["Samantha","Google US English","Microsoft Aria","
   for(var i=0;i<pref.length;i++)for(var j=0;j<voices.length;j++)if(voices[j].name.indexOf(pref[i])>=0)return voices[j];
   for(var j=0;j<voices.length;j++)if(voices[j].lang==="en-US")return voices[j];
   for(var j=0;j<voices.length;j++)if(voices[j].lang.indexOf("en")===0)return voices[j];return null;}
-function speak(t,r,btn){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=r;
+var _bcls="";
+function speak(t,r,btn){try{stopSlow();speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=r;
   var v=pickVoice();if(v)u.voice=v;
-  if(btn){btn.className="playing";u.onend=function(){btn.className="";};u.onerror=function(){btn.className="";};}
+  if(btn){_bcls=btn.className;btn.className=_bcls+" playing";
+    u.onend=function(){btn.className=_bcls;};u.onerror=function(){btn.className=_bcls;};}
   speechSynthesis.speak(u);}catch(e){}}
+
+/* ---- 천천히 = 단어별 끊어 읽기 ----
+   iOS Safari는 utterance.rate 를 무시하는 경우가 많아 rate만으로는 느려지지 않는다.
+   그래서 문장을 단어로 쪼개 하나씩 재생하고 사이에 공백을 넣는다. 모든 기기에서 확실히 느려진다. */
+var _slowT=null,_slowStop=false;
+function stopSlow(){_slowStop=true;if(_slowT){clearTimeout(_slowT);_slowT=null;}}
+function speakSlow(t,btn,gap){
+  try{
+    stopSlow();speechSynthesis.cancel();_slowStop=false;
+    var words=String(t).split(/\s+/).filter(Boolean);
+    var G=gap||260,i=0,base=btn?btn.className:"";
+    if(btn)btn.className=base+" playing";
+    function done(){if(btn)btn.className=base;_slowT=null;}
+    function next(){
+      if(_slowStop)return;
+      if(i>=words.length){done();return;}
+      var w=words[i++],moved=false;
+      function go(){if(moved||_slowStop)return;moved=true;_slowT=setTimeout(next,G);}
+      var u=new SpeechSynthesisUtterance(w);
+      u.lang="en-US";u.rate=0.6;
+      var v=pickVoice();if(v)u.voice=v;
+      u.onend=go;u.onerror=go;
+      speechSynthesis.speak(u);
+      setTimeout(go,1500+w.length*120);   /* onend가 안 오는 기기 대비 */
+    }
+    next();
+  }catch(e){if(btn)btn.className=btn.className.replace(" playing","");}
+}
 
 function curList(){return inRetry?retry:queue;}
 function curIdx(){return inRetry?pos-queue.length:pos;}
@@ -420,7 +450,7 @@ function reveal(){
   $("cardArea").innerHTML='<div class="card">'+
     '<div class="sitlabel">상황</div><div class="sit" style="font-size:15px;color:#9b9b90;margin-bottom:14px">'+esc(c.sit)+'</div>'+
     '<div class="en">'+esc(c.en)+'</div><div class="sound">🔊 '+esc(c.sound)+'</div><div class="kos">'+esc(c.ko)+'</div>'+
-    '<div class="listen"><button onclick="speak(\''+q(c.en)+'\',0.75,this)">🐢 천천히</button>'+
+    '<div class="listen"><button onclick="speakSlow(\''+q(c.en)+'\',this)">🐢 단어별 천천히</button>'+
     '<button onclick="speak(\''+q(c.en)+'\',1.0,this)">▶ 원어민 속도</button></div>'+
     '<div class="shadow"><p>따라 말하기 3회 — 할 때마다 눌러 체크</p><div class="dots">'+
     '<button class="dot" onclick="this.className=\'dot done\'">1</button>'+
@@ -548,7 +578,7 @@ function soundTest(btn){
   if(typeof speechSynthesis==="undefined"){
     m.innerHTML="❌ 이 환경은 음성 재생을 지원하지 않습니다.<br>파일 앱 미리보기 대신 <b>Safari</b>로 열어보세요. (파일 앱 → 공유 → Safari)";return;}
   loadVoices();
-  speak("Can I get a burger?",0.85,btn);
+  speakSlow("Can I get a burger",btn);
   m.innerHTML=voices.length
     ? "✅ 재생을 시도했습니다. 소리가 안 들리면 ① 무음 모드(측면 스위치) 해제 ② 볼륨 확인 ③ 그래도 안 되면 <b>Safari</b>로 열어보세요."
     : "⚠️ 음성 목록이 비어 있습니다. 잠시 후 다시 누르거나, <b>Safari</b>로 열어보세요.";
