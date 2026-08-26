@@ -1,626 +1,411 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="영어 드릴">
-<meta name="theme-color" content="#2F7D5D">
-<link rel="apple-touch-icon" href="icon-180.png">
-<link rel="icon" type="image/png" href="favicon.png">
-<link rel="manifest" href="manifest.json">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>영어 드릴 — 다떠영식 훈련</title>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html{-webkit-text-size-adjust:100%}
-  body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Malgun Gothic",sans-serif;
-       background:#F7F5F0;color:#1c1c1c;min-height:100vh;overflow-x:hidden;
-       padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))}
-  .wrap{max-width:560px;margin:0 auto;width:100%;
-        padding:calc(16px + env(safe-area-inset-top,0px)) calc(14px + env(safe-area-inset-right,0px))
-                50px calc(14px + env(safe-area-inset-left,0px))}
-  header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;gap:8px}
-  header h1{font-size:17px;font-weight:800;letter-spacing:-.3px;white-space:nowrap}
-  header .day{font-size:13px;color:#7a7a72;font-weight:700;white-space:nowrap}
-  /* 5칸 고정 그리드 — 줄바꿈으로 버튼이 늘어나는 문제 방지 */
-  .tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:16px;width:100%}
-  .tab{display:block;width:100%;min-width:0;text-align:center;padding:8px 2px;border-radius:10px;
-       font-size:11px;font-weight:700;line-height:1.25;color:#8a8a80;background:#EDEAE2;
-       cursor:pointer;border:none;font-family:inherit;overflow:hidden}
-  .tab i{display:block;font-style:normal;font-size:15px;margin-bottom:2px;line-height:1}
-  .tab.on{background:#2F7D5D;color:#fff}
-  .hidden{display:none!important}
-  .meta{display:flex;justify-content:space-between;font-size:12.5px;color:#7a7a72;margin-bottom:8px;font-weight:700}
-  .bar{height:5px;background:#E5E1D6;border-radius:3px;overflow:hidden;margin-bottom:18px}
-  .bar i{display:block;height:100%;background:#2F7D5D;width:0;transition:width .3s}
-  .card{background:#fff;border-radius:18px;padding:24px 18px;box-shadow:0 2px 14px rgba(60,50,20,.07);
-        overflow-wrap:anywhere}
-  .en,.ans,.subjq,.sit,.ko{overflow-wrap:break-word}
-  .tag{display:inline-block;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:20px;margin-bottom:14px}
-  .tag.new{background:#FFF1D6;color:#B07908}
-  .tag.rev{background:#E3F0EA;color:#2F7D5D}
-  .tag.think{background:#EAE4F7;color:#5B3FA8;margin-left:5px}
-  .sitlabel{font-size:11.5px;font-weight:800;color:#B07908;letter-spacing:.4px;margin-bottom:7px}
-  .sit{font-size:19px;font-weight:700;line-height:1.5;color:#3a3a34;margin-bottom:18px;letter-spacing:-.3px}
-  .hint{font-size:13.5px;color:#9b9b90;margin-bottom:20px;line-height:1.5}
-  .btn{display:block;width:100%;padding:14px;border:none;border-radius:12px;font-size:15.5px;font-weight:800;
-       cursor:pointer;letter-spacing:-.3px;font-family:inherit}
-  .btn.primary{background:#1c1c1c;color:#fff}
-  .btn.ghost{background:#EFEDE6;color:#1c1c1c;margin-top:9px}
-  .btn.mini{background:#fff;border:1.5px solid #CFC9B8;color:#6b6b60;font-size:14px;padding:11px;margin-top:9px}
-  .btn.purple{background:#5B3FA8;color:#fff}
-  .skel{background:#FFFBEF;border:1.5px dashed #E3C77A;border-radius:12px;padding:15px;margin-bottom:16px}
-  .skel .lbl{font-size:11.5px;font-weight:800;color:#B07908;margin-bottom:6px}
-  .skel .txt{font-size:20px;font-weight:800;color:#8A6100;letter-spacing:-.3px}
-  .skel .sub{font-size:12.5px;color:#A08B4E;margin-top:6px;line-height:1.45}
-  .en{font-size:23px;font-weight:800;line-height:1.35;color:#2F7D5D;letter-spacing:-.2px;margin-bottom:5px}
-  .sound{font-size:14.5px;color:#B07908;font-weight:700;margin-bottom:3px}
-  .kos{font-size:14px;color:#9b9b90;margin-bottom:2px}
-  .listen{display:flex;gap:8px;margin:16px 0 4px}
-  .listen button{flex:1;padding:12px;border-radius:11px;border:1.5px solid #2F7D5D;background:#fff;
-                 color:#2F7D5D;font-size:13.5px;font-weight:800;cursor:pointer;font-family:inherit}
-  .listen button.playing{background:#2F7D5D;color:#fff}
-  .shadow{margin:14px 0 4px;text-align:center}
-  .shadow p{font-size:12.5px;color:#9b9b90;margin-bottom:8px;font-weight:700}
-  .dots{display:flex;justify-content:center;gap:12px}
-  .dot{width:34px;height:34px;border-radius:50%;border:2px solid #CFC9B8;background:#fff;cursor:pointer;
-       font-size:14px;font-weight:800;color:#CFC9B8;font-family:inherit}
-  .dot.done{background:#2F7D5D;border-color:#2F7D5D;color:#fff}
-  .pat{display:inline-block;background:#F0EDE4;border-radius:8px;padding:6px 11px;font-size:13px;
-       font-weight:800;color:#6b5d2e;margin:14px 0 0}
-  .note{font-size:13.5px;color:#7a7a72;line-height:1.6;margin-top:11px;padding-top:11px;border-top:1px dashed #E5E1D6}
-  .note b{color:#3a3a34}
-  .grade{display:flex;gap:9px;margin-top:18px}
-  .grade button{flex:1;padding:13px;border:none;border-radius:12px;font-size:14.5px;font-weight:800;cursor:pointer;font-family:inherit}
-  .g-easy{background:#2F7D5D;color:#fff}
-  .g-hard{background:#FFE6D1;color:#B4560A}
-  /* 주어 고르기 */
-  .subjq{font-size:22px;font-weight:800;line-height:1.4;letter-spacing:-.5px;margin-bottom:6px}
-  .subjask{font-size:13.5px;color:#5B3FA8;font-weight:800;margin-bottom:14px}
-  .opt{display:block;width:100%;padding:18px 16px;margin-bottom:10px;border-radius:13px;border:2px solid #E5E1D6;
-       background:#fff;font-size:17.5px;font-weight:800;color:#3a3a34;cursor:pointer;text-align:left;font-family:inherit;
-       line-height:1.35;box-shadow:0 1px 4px rgba(60,50,20,.04)}
-  .opt:active{transform:scale(.985)}
-  .drillhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-  .drillhead .t{font-size:12.5px;font-weight:800;color:#5B3FA8;letter-spacing:.2px}
-  .drillhead .n{font-size:12.5px;font-weight:800;color:#9b9b90}
-  .sndgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-  .sndgrid button{padding:12px 8px;border-radius:12px;border:1.8px solid #2F7D5D;background:#fff;
-                  cursor:pointer;font-family:inherit;text-align:center;line-height:1.3}
-  .sndgrid button b{display:block;font-size:14px;font-weight:800;color:#2F7D5D;margin-bottom:2px}
-  .sndgrid button i{display:block;font-style:normal;font-size:12.5px;font-weight:700;color:#B07908}
-  .sndgrid button.playing{background:#2F7D5D}
-  .sndgrid button.playing b,.sndgrid button.playing i{color:#fff}
-  .secthead{font-size:13px;font-weight:800;color:#9b9b90;margin:18px 0 8px;letter-spacing:.2px}
-  .opt.wrong{border-color:#E8B49A;background:#FFF3EC;color:#B4560A}
-  .opt.right{border-color:#2F7D5D;background:#E9F4EF;color:#2F7D5D}
-  .why{background:#F4F1FB;border-radius:12px;padding:14px;font-size:14px;line-height:1.6;color:#4a4458;margin-top:12px}
-  .why b{color:#5B3FA8}
-  .fin{text-align:center;padding:30px 8px}
-  .fin .big{font-size:42px;margin-bottom:8px}
-  .fin h2{font-size:20px;font-weight:800;margin-bottom:7px}
-  .fin p{font-size:14px;color:#7a7a72;line-height:1.6;margin-bottom:16px}
-  textarea{width:100%;height:120px;border:1.5px solid #E5E1D6;border-radius:12px;padding:11px;
-           font-size:12.5px;font-family:inherit;color:#444;background:#fff;resize:vertical;margin-bottom:9px}
-  .empty{text-align:center;padding:40px 10px;color:#7a7a72;font-size:14.5px;line-height:1.7}
-  .speed{text-align:center;padding:34px 16px}
-  .speed .cnt{font-size:13px;color:#9b9b90;font-weight:700;margin-bottom:14px}
-  .speed .s{font-size:22px;font-weight:800;line-height:1.45;margin-bottom:16px;letter-spacing:-.4px}
-  .speed .timer{font-size:44px;font-weight:800;color:#2F7D5D;margin-bottom:14px}
-  .speed .ans{font-size:20px;font-weight:800;color:#2F7D5D;line-height:1.35}
-  .grp{margin-bottom:18px}
-  .grp h3{font-size:12.5px;font-weight:800;color:#9b9b90;margin-bottom:7px;letter-spacing:.2px}
-  .row{background:#fff;border-radius:12px;padding:13px 15px;margin-bottom:7px;cursor:pointer;
-       box-shadow:0 1px 6px rgba(60,50,20,.05)}
-  .row .rko{font-size:13px;color:#7a7a72;margin-bottom:3px}
-  .row .ren{font-size:15.5px;font-weight:800;color:#1c1c1c}
-  .row .rsd{font-size:12px;color:#B07908;font-weight:700;margin-top:2px}
-  .bank-tip{font-size:12px;color:#9b9b90;text-align:center;margin-bottom:12px}
-  .guide{background:#fff;border-radius:16px;padding:20px 18px;font-size:14px;line-height:1.75;color:#3a3a34}
-  .guide h3{font-size:14.5px;font-weight:800;margin:16px 0 5px;color:#1c1c1c}
-  .guide h3:first-child{margin-top:0}
-  .guide .kbd{background:#F0EDE4;border-radius:6px;padding:2px 7px;font-weight:700;font-size:12.5px}
-  .guide .src{font-size:12px;color:#9b9b90;margin-top:16px;padding-top:12px;border-top:1px solid #EFEDE6;line-height:1.6}
-  .guide ol{padding-left:19px;margin:4px 0}
-  .guide li{margin-bottom:4px}
-  .vb{padding:10px 0;border-bottom:1px solid #F0EDE4}
-  .vb:last-child{border-bottom:none}
-  .vb .vf{font-weight:800;color:#5B3FA8;font-size:14px;margin-bottom:2px}
-  .vb .vm{font-size:13.5px;color:#5a5a52;margin-bottom:3px}
-  .vb .vm b{color:#3a3a34}
-  .vb .vx{font-size:13.5px;color:#2F7D5D;font-weight:700;line-height:1.5}
-  .trig{background:#F4F1FB;border-radius:12px;padding:13px 15px;margin:10px 0;font-size:13.5px;line-height:1.85}
-  .trig b{color:#5B3FA8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#0e1116;color:#e8ecf1;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Segoe UI",sans-serif;line-height:1.6;padding-bottom:40px}
+header{position:sticky;top:0;z-index:10;background:#0e1116;padding:12px 14px 0;border-bottom:1px solid #1e2530}
+.hrow{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+h1{font-size:19px;margin:0;font-weight:800}
+.dayb{font-size:13px;color:#8b97a8;font-weight:700;white-space:nowrap}
+.ver{font-size:10px;color:#3d4757;margin-left:6px;font-weight:500}
+nav{display:flex;gap:4px;overflow-x:auto;padding:10px 0 0;-webkit-overflow-scrolling:touch}
+nav button{flex:0 0 auto;background:#161c25;color:#8b97a8;border:0;border-radius:8px 8px 0 0;padding:9px 13px;font-size:13px;font-weight:700;font-family:inherit}
+nav button.on{background:#1e2a3a;color:#fff}
+main{padding:14px}
+.meta{display:flex;justify-content:space-between;font-size:12px;color:#7c889a;margin-bottom:10px;font-weight:600}
+.card{background:#161c25;border:1px solid #232c39;border-radius:14px;padding:16px;margin-bottom:12px}
+.tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;margin-bottom:10px}
+.t-new{background:#1b3a2a;color:#5ce39a}.t-rev{background:#3a3320;color:#e8c05c}.t-brain{background:#2c2340;color:#c49cf5}
+.lbl{font-size:11px;color:#6b7889;font-weight:800;letter-spacing:.4px;margin-bottom:5px}
+.trig{font-size:17px;font-weight:700;color:#fff;background:#0f151d;border-left:3px solid #3d7fd6;padding:11px 12px;border-radius:0 8px 8px 0;margin-bottom:12px}
+.ko{font-size:17px;font-weight:700;color:#fff;margin-bottom:12px}
+.btn{display:block;width:100%;padding:14px;border:0;border-radius:11px;font-size:15px;font-weight:800;font-family:inherit;margin-top:9px;background:#232c39;color:#cfd8e3}
+.btn.primary{background:#2f6fd0;color:#fff}
+.btn.ok{background:#1d7a4d;color:#fff}.btn.no{background:#7a2f3a;color:#fff}
+.row{display:flex;gap:8px}.row .btn{margin-top:9px}
+.hint{font-size:13px;color:#8b97a8;margin:10px 0 0;padding:10px;background:#0f151d;border-radius:9px}
+textarea{width:100%;background:#0f151d;border:1px solid #2b3542;border-radius:10px;color:#e8ecf1;padding:11px;font-size:15px;font-family:inherit;margin-top:9px;resize:none}
+.ans{background:#0f151d;border:1px solid #2b4a6e;border-radius:11px;padding:13px;margin-top:11px}
+.en{font-size:20px;font-weight:800;color:#7fc4ff;margin-bottom:5px}
+.yeon{font-size:14px;color:#ffd479;font-weight:700;margin-bottom:8px}
+.trap{font-size:13px;color:#ff9d9d;background:#2a1618;border-radius:8px;padding:9px;margin-top:8px}
+.fu{font-size:14px;color:#c8d2df;background:#141b24;border-radius:8px;padding:10px;margin-top:9px}
+.guide{font-size:13px;color:#8b97a8;margin-top:10px}
+h2{font-size:16px;margin:20px 0 8px;color:#fff}
+h3{font-size:14px;margin:16px 0 6px;color:#9fb3cc}
+p,li{font-size:14px;color:#c2cbd7}
+ul{padding-left:20px;margin:6px 0}
+.pill{display:inline-block;background:#1a222d;border:1px solid #2b3542;border-radius:8px;padding:6px 10px;margin:3px 3px 0 0;font-size:13px;font-weight:700;color:#dbe4ee}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+td,th{border-bottom:1px solid #232c39;padding:7px 4px;text-align:left;vertical-align:top}
+th{color:#7c889a;font-size:11px;font-weight:800}
+.big{font-size:26px;font-weight:800;color:#fff}
+.stat{display:flex;gap:8px;margin:10px 0}
+.stat div{flex:1;background:#0f151d;border-radius:10px;padding:11px;text-align:center}
+.stat b{display:block;font-size:20px;color:#7fc4ff}
+.stat span{font-size:11px;color:#7c889a;font-weight:700}
+.muted{color:#6b7889;font-size:12px}
+.sp{height:8px}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header><h1>🇺🇸 영어 드릴</h1><div class="day" id="dayLabel">— 미실행 —</div></header>
-  <div class="tabs">
-    <button class="tab on" id="tabTrain" onclick="showTab('train')"><i>🔥</i>훈련</button>
-    <button class="tab" id="tabSubj" onclick="showTab('subj')"><i>🧠</i>주어</button>
-    <button class="tab" id="tabBank" onclick="showTab('bank')"><i>📚</i>문장</button>
-    <button class="tab" id="tabSound" onclick="showTab('sound')"><i>🔊</i>소리</button>
-    <button class="tab" id="tabGuide" onclick="showTab('guide')"><i>📖</i>사용법</button>
+<header>
+  <div class="hrow">
+    <h1>🇺🇸 영어 드릴<span class="ver" id="verStamp"></span></h1>
+    <div class="dayb" id="dayBadge"></div>
   </div>
-
-  <div id="train">
-    <div class="meta"><span id="qpos"></span><span id="qkind"></span></div>
-    <div class="bar"><i id="prog"></i></div>
-    <div id="cardArea">
-      <!-- JS가 실행되면 아래 안내는 즉시 카드로 교체됨. 안 보이면 스크립트가 차단된 환경 -->
-      <div class="card" style="text-align:center">
-        <div style="font-size:40px;margin-bottom:10px">📥</div>
-        <h2 style="font-size:19px;font-weight:800;margin-bottom:10px">이 화면에서는 작동하지 않아요</h2>
-        <p style="font-size:14px;color:#7a7a72;line-height:1.65;margin-bottom:16px">
-          지금 <b>Claude 앱 미리보기</b>로 보고 있어서 기능이 멈춰 있습니다.<br>
-          아래 순서로 <b>한 번만</b> 저장하면 그 뒤로는 잘 돌아가요.
-        </p>
-        <div style="text-align:left;background:#FFFBEF;border:1.5px dashed #E3C77A;border-radius:12px;
-                    padding:16px 16px 16px 14px;font-size:14px;line-height:1.85;color:#6b5d2e">
-          <b>1.</b> 이 화면 <b>오른쪽 위 ⬇︎ (다운로드)</b> 누르기<br>
-          <b>2.</b> <b>“파일에 저장”</b> → <b>iCloud Drive</b> 선택 → 저장<br>
-          <b>3.</b> 홈 화면에서 <b>파일</b> 앱 열기<br>
-          <b>4.</b> <b>english-drill.html</b> 탭 → 여기서 앱이 실행됨<br>
-          <b>5.</b> 파일을 <b>길게 눌러 → 즐겨찾기</b> (다음부터 한 번에 열림)
-        </div>
-        <p style="font-size:13px;color:#9b9b90;line-height:1.6;margin-top:14px">
-          4번에서도 이 안내가 그대로 보이면 알려주세요.<br>다른 방식으로 만들어 드릴게요.
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <div id="subj" class="hidden">
-    <div id="subjDrill"></div>
-    <div class="secthead">📖 원리 설명 (필요할 때만 보세요)</div>
-    <div class="guide">
-      <h3>🧠 주어는 사람이 아니어도 된다</h3>
-      한국어는 <b>“내가 / 네가”</b>로 문장을 시작하는 습관이 있다. 그래서 주어를 사람으로 잡는 순간 그 뒤가 안 이어진다.<br>
-      영어는 <b>그 상황을 만든 것</b>을 맨 앞에 세운다 — 그게 커피든, 코트든, 표지판이든.
-      <h3>⚙️ 4단계 알고리즘</h3>
-      <ol>
-        <li>한국어 문장에서 <b>“내가 / 네가”를 지운다</b></li>
-        <li>이 일을 <b>일으킨 것</b>이 뭔지 찾는다 (커피, 코트, 소식, 버스, 표지판, 얼굴…)</li>
-        <li>그걸 <b>맨 앞에 세운다</b></li>
-        <li>동사는 아래 6개 중 하나로 거의 다 해결된다</li>
-      </ol>
-      <h3>🔧 만능 동사 6개</h3>
-      <div class="vb"><div class="vf">make + 나 + 상태</div><div class="vm">그 순간 그렇게 <b>만들었다</b></div><div class="vx">The coffee made me awake.</div></div>
-      <div class="vb"><div class="vf">keep + 나 + 상태</div><div class="vm">계속 그 상태로 <b>유지해준다</b></div><div class="vx">This coat keeps me warm.</div></div>
-      <div class="vb"><div class="vf">tell + 나 + 내용</div><div class="vm">나에게 <b>알려준다</b></div><div class="vx">Her face tells me she is angry.</div></div>
-      <div class="vb"><div class="vf">say + 내용</div><div class="vm">글자로 <b>적혀 있다</b></div><div class="vx">The sign says 'no left turn'.</div></div>
-      <div class="vb"><div class="vf">take / bring + 사람</div><div class="vm">어디로 <b>데려간다</b></div><div class="vx">This bus takes you downtown.</div></div>
-      <div class="vb"><div class="vf">give + 나 + 것</div><div class="vm">나에게 <b>준다</b></div><div class="vx">This app gives me directions.</div></div>
-      <h3>🚨 한국어 신호탄 — 이 말이 나오면 사물이 주어</h3>
-      <div class="trig">
-        <b>“~ 때문에 / ~ 덕분에”</b> → 그 원인을 주어로 + make / keep<br>
-        <b>“~하면 ~할 수 있어”</b> → 그 수단을 주어로 + take / get<br>
-        <b>“~라고 적혀 있어”</b> → 그 물건을 주어로 + say<br>
-        <b>“~를 보니까 ~인 것 같아”</b> → 본 대상을 주어로 + tell me<br>
-        <b>“자꾸 ~해”</b> → 그 사물을 주어로 + keep -ing<br>
-        <b>“왜 ~했어?”</b> → What을 주어로 + brought / made
-      </div>
-      <h3>🎯 이걸 왜 먼저 하나</h3>
-      다떠영 훈련법의 1번 원칙이 <b>“찾는 훈련 먼저”</b>다. 무작정 외우기 전에, 상황 속에서 뭘 주어로 잡을지 <b>고르는 연습</b>부터 해야 실전에서 튀어나온다.
-      <div class="src">출처: 다떠영 영어회화 「영어식 사고 깨닫고 눈물 줄줄 흘릴 영상」 · 「학원에서도 모르는 패턴영어 훈련법」</div>
-    </div>
-  </div>
-
-  <div id="bank" class="hidden">
-    <p class="bank-tip">문장을 누르면 원어민 발음이 재생됩니다 🔊</p>
-    <div id="bankList"></div>
-  </div>
-
-  <div id="sound" class="hidden">
-    <div class="card">
-      <div class="sitlabel">바로 듣고 따라하기</div>
-      <div style="font-size:13.5px;color:#7a7a72;margin-bottom:14px;line-height:1.55">
-        버튼을 누르면 원어민 발음이 나옵니다. <b>소리 내어 3번</b> 따라 하세요.
-      </div>
-      <div class="sndgrid">
-        <button onclick="speak('water',0.75,this)"><b>water</b><i>워러 · 유음</i></button>
-        <button onclick="speakSlow('Can I get a burger',this)"><b>Can I get a</b><i>캐나이 게러 · 연음</i></button>
-        <button onclick="speak('medium',0.75,this)"><b>medium</b><i>미리엄 · 유음</i></button>
-        <button onclick="speak('shuttle',0.75,this)"><b>shuttle</b><i>셔를 · 유음</i></button>
-        <button onclick="speak('thanks',0.7,this)"><b>thanks</b><i>혀를 앞니 사이 · TH</i></button>
-        <button onclick="speak('with',0.7,this)"><b>with</b><i>혀를 앞니 사이 · TH</i></button>
-        <button onclick="speakSlow('He has it',this)"><b>He has it</b><i>히 해짓 · H 약하게</i></button>
-        <button onclick="speak('cheese',0.7,this)"><b>cheese</b><i>치이즈 · 모음 길게</i></button>
-      </div>
-      <button class="btn mini" onclick="soundTest(this)">🔈 소리가 안 나면 여기를 누르세요</button>
-      <div id="sndMsg" style="font-size:13px;color:#7a7a72;margin-top:9px;line-height:1.6"></div>
-    </div>
-    <div class="secthead">📖 원리 설명</div>
-    <div class="guide">
-      <h3>🔑 리스닝은 이 2가지가 전부</h3>
-      <b>① 연음 (Linking)</b> — 앞 단어의 끝소리와 뒷 단어의 첫소리가 이어진다. 단어를 끊지 말고 한 덩어리로.<br>
-      예) <b>Can I get a</b> burger? → “캐나이 게<b>러</b> 버거”<br><br>
-      <b>② 유음 (Flap T/D)</b> — 혀를 윗잇몸에 살짝 튕기듯. T가 ㄹ 소리가 된다.<br>
-      예) get a → “게<b>러</b>” / medium → “미<b>리</b>엄” / water → “워<b>러</b>” / shuttle → “셔<b>를</b>”
-      <h3>🌬 소리 숨기기 &amp; 혀 위치</h3>
-      <b>H 생략(공기반 소리반)</b> — He, Have의 H를 세게 내지 않고 숨 뱉듯 아주 약하게. 목에 손을 대고 진동이 없는 ‘무성음’ 상태가 포인트.<br><br>
-      <b>TH 혀 위치</b> — with, thanks의 th는 혀를 윗니와 아랫니 사이에 살짝 끼웠다가 빼면서.<br><br>
-      <b>모음 강조</b> — cheese, school처럼 모음이 두 개 겹치면 소리를 다 살려 길게 발음해야 원어민 소리가 잡힌다.
-      <div class="src">출처: 다떠영 영어회화 「보고나면 귀가 뻥 뚫릴 영상 | 리스닝 법칙」</div>
-    </div>
-  </div>
-
-  <div id="guide" class="hidden">
-    <div class="guide">
-      <h3>⏱ 하루 15분, 이 순서 그대로</h3>
-      <ol>
-        <li>🧠 카드면 <b>주어부터 고른다</b> (사람이냐 사물이냐)</li>
-        <li><b>상황</b>을 읽고 장면을 떠올린다 (한국어 문장 말고)</li>
-        <li><b>소리 내서</b> 영어로 말해본다 — 안 나와도 3초는 버틴다</li>
-        <li>막히면 <span class="kbd">뼈대 힌트</span> — 틀만 잡고 다시 시도</li>
-        <li><span class="kbd">정답 확인</span> → 듣기 → <b>따라 말하기 3회</b></li>
-        <li>솔직하게 <span class="kbd">쉬웠어 / 어려웠어</span></li>
-        <li>마지막 <b>속도 훈련</b> — 3초 안에 튀어나오는지 점검</li>
-      </ol>
-      <h3>🧠 왜 이 순서인가 (다떠영 원리)</h3>
-      <b>찾는 훈련 먼저</b> — 외우기 전에 상황 속에서 주어·패턴을 고르는 연습부터.<br><br>
-      <b>영작이 유일한 방법</b> — 백지에서 스스로 문장을 만드는 과정에 문장구조·뉘앙스·문법·어순이 전부 들어있다.<br><br>
-      <b>텍스트 말고 ‘상황’으로</b> — ‘한국어 단어 ↔ 영어 단어’ 매칭 암기는 스피킹에 안 쓰인다.<br><br>
-      <b>뼈대 먼저, 구체적인 건 뒤로</b> — 핵심 틀을 잡고 그 뒤에 단어를 붙인다.<br><br>
-      <b>암기가 아니라 속도</b> — 문장 생성 과정을 반복해 <b>생각의 속도</b>를 단축하는 게 실전 스피킹의 완성.
-      <h3>📅 복습 간격</h3>
-      새 문장은 매일 3개. 배운 문장은 <b>1 · 3 · 7 · 14 · 30일</b> 뒤에 자동으로 다시 나온다. 매일 열기만 하면 된다.
-      <h3>➕ 내 문장 추가하기</h3>
-      Claude <b>‘영어’ 프로젝트</b>에 평소 쓰는 한국어 문장을 던지면 → 자연스러운 영어 + 연음 표기 + 상황 카드로 만들어 다음 업데이트에 넣어준다.
-      <div class="src">방법론 출처: 다떠영 영어회화(황빛나) — 「영어식 사고」, 「패턴영어 훈련법」, 「만능 치트키」, 「만능패턴 15개」, 「리스닝 법칙」</div>
-    </div>
-  </div>
-</div>
+  <nav id="nav"></nav>
+</header>
+<main id="main"></main>
 
 <script>
-var EPOCH="2026-08-20";var DEP="2026-08-29";
-var INTERVALS=[2,5,9];
-var LABELS=["못 알아들었을 때","공항·입국심사","택시·이동","호텔","식당","돈·쇼핑","문제·도움","스몰토크","총점검 🧠"];
+/* ============================================================
+   영어 드릴 v7  ·  2026-08-26
+   v6 대비 변경 3가지 (그 외 동작은 v6와 동일하게 유지)
+     1) 밤 복기 모드 — 출국일(DEP)부터 자동 전환
+     2) 기록(localStorage) — 새 버튼 없이 기존 탭에 측정을 얹음
+     3) 채점 버튼 문구 — 어려웠어/쉬웠어 → 나왔다/안 나왔다
+   ============================================================ */
+var VERSION = "v7 · 2026-08-26";
+var EPOCH = "2026-08-20";   // Day 1
+var DEP   = "2026-08-29";   // 출국일 = 밤 복기 모드 시작
+var LOGKEY = "drill_log_v7";
+var REVIEW = [2,5,9];
+var CAP = 12;
 
-var DECK=[
-/* Day 1 · 못 알아들었을 때 */
-{d:0,sit:"🗣 공항 직원이 아주 빠르게 말한다 —\n\"Can I see your boarding pass?\"\n\n👂 아래 ▶ 를 눌러 실제 속도로 들어보세요. 한 번에 안 잡히는 게 정상입니다.",ko:"죄송해요, 다시 말씀해 주시겠어요?",skel:"Sorry, could you ___ again?",skelSub:"못 알아들었을 때 1순위",en:"Sorry, could you say that again?",sound:"쏘리 쿠쥬 쎄이 댓 어겐",pat:"못 알아들었을 때 · 1순위",note:"<b>이 한 문장이 회화의 절반이다.</b> 급하면 <b>\"Sorry?\"</b> 한 마디로도 100% 통한다. 못 알아들은 걸 숨기려다 대화가 끊긴다. 참고로 원어민은 Can I see your를 <b>캐나이씨여</b>로 뭉쳐서 말한다 — 글자가 아니라 <b>덩어리 소리</b>로 외워야 들린다."},
-{d:0,sit:"🗣 다시 말해줬는데도 너무 빠르다.\n두 번째로 부탁해야 한다.",ko:"조금만 천천히 말해 주실 수 있나요?",skel:"Could you speak ___?",skelSub:"두 번째는 '다시'가 아니라 '천천히'",en:"Could you speak a little slower?",sound:"쿠쥬 스픽 어리를 슬로워",pat:"못 알아들었을 때 · 2순위",note:"a little이 붙어 <b>어리를</b>. 같은 말을 또 빠르게 들으면 소용없다 — <b>속도</b>를 지목해야 풀린다."},
-{d:0,sit:"🗣 직원: \"You need to fill out the declaration form.\"\n\n'declaration'이 뭔지 모르겠다.",ko:"그게 무슨 뜻이에요?",skel:"What does that ___?",skelSub:"모르는 단어 하나만 짚는 틀",en:"What does that mean?",sound:"왓 더즈 댓 민",pat:"못 알아들었을 때 · 단어",note:"문장 전체를 다시 듣지 말고 <b>모르는 단어만</b> 짚는다. does that이 붙어 <b>더즈 댓</b>."},
-{d:0,sit:"세 번이나 되물었는데도 안 통한다.\n\n소리를 포기해야 할 때다.",ko:"적어 주실 수 있나요?",skel:"Could you ___ it down?",skelSub:"귀를 포기하고 눈으로 넘어가는 틀",en:"Could you write it down?",sound:"쿠쥬 롸이릿 다운",pat:"못 알아들었을 때 · 최후수단",note:"write it이 유음으로 이어져 <b>롸이릿</b>. 숫자·주소·가격은 귀로 버티지 말고 글자로 넘기는 게 압도적으로 빠르다."},
+/* ---------- 날짜 ---------- */
+function ymd(d){var m=("0"+(d.getMonth()+1)).slice(-2),a=("0"+d.getDate()).slice(-2);return d.getFullYear()+"-"+m+"-"+a;}
+function today(){return ymd(new Date());}
+function diffDays(a,b){return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/86400000);}
+function dayNum(){return diffDays(EPOCH,today())+1;}
+function dDay(){return diffDays(today(),DEP);}
+function isDebrief(){return diffDays(today(),DEP)<=0;}
 
-/* Day 2 · 공항·입국심사 */
-{d:1,sit:"🗣 입국심사관: \"What's the purpose of your visit?\"",ko:"여행 왔어요.",skel:"I'm here on ___.",skelSub:"목적을 한 단어로",en:"I'm here on vacation.",sound:"아임 히어 온 베케이션",pat:"입국심사 · 목적",note:"<b>Tourism.</b> 한 단어만 해도 통과된다. 문장으로 말하면 추가 질문이 줄어든다. I came to travel은 번역투."},
-{d:1,sit:"🗣 심사관: \"How long are you staying?\"",ko:"2주 있을 거예요.",skel:"I'm staying for ___.",skelSub:"기간을 말하는 틀",en:"I'm staying for two weeks.",sound:"아임 스테잉 포 투 윅스",pat:"입국심사 · 기간",note:"for를 빼먹기 쉽다. 급하면 <b>Two weeks.</b> 만으로도 통한다. will stay가 아니라 <b>진행형</b>을 쓰는 게 원어민 감각."},
-{d:1,sit:"🗣 심사관: \"Where are you staying?\"",ko:"호텔에 묵어요.",skel:"I'm staying at ___.",skelSub:"머무는 곳을 말하는 틀",en:"I'm staying at a hotel.",sound:"아임 스테잉 애러 호텔",pat:"입국심사 · 숙소",note:"at a가 붙어 <b>애러</b>. 앞 문장과 같은 I'm staying~ 틀 — 하나로 두 질문을 막는다."},
-{d:1,think:1,sit:"🗣 상대: \"Which gate?\"\n\n손에 든 탑승권을 보며 알려준다.",ko:"표에 22번 게이트라고 적혀 있어요.",subjOpts:["I (내가)","The ticket (표가)","Gate 22 (22번 게이트가)"],subjAns:1,subjWhy:"<b>'~에 적혀 있다'</b>는 그 물건이 <b>말한다</b>로 뒤집는다. is written이 아니라 <b>says</b>.",skel:"The ticket ___ gate 22.",skelSub:"'표가' 말한다",en:"The ticket says gate 22.",sound:"더 티킷 쎄즈 게잇 트웬티투",pat:"영어식 사고 · say + 내용",note:"표·표지판·메뉴판·이메일·앱 전부 동일 — The sign says… / The app says… / The email says…"},
+/* ---------- 기록 (측정) ----------
+   원칙: 새 동작을 만들지 않는다. 이미 누르는 탭에 측정을 얹는다.
+     · 카드 표시 → '정답 확인' 누름  = 몇 초 버텼나 (생성 시간)
+     · 받아쓰기 칸에 글자가 있었나   = 실제로 입이 떨어졌나 (행동 증거)
+     · 나왔다 / 안 나왔다            = 자기보고 (기존 채점 탭 그대로)
+     · 앱 열림 / 마지막 카드 번호    = 실행률·완주율
+------------------------------------ */
+function loadLog(){try{return JSON.parse(localStorage.getItem(LOGKEY))||{days:{},debrief:{}};}catch(e){return{days:{},debrief:{}};}}
+function saveLog(L){try{localStorage.setItem(LOGKEY,JSON.stringify(L));}catch(e){}}
+var LOG = loadLog();
+function todayRec(){
+  var t=today();
+  if(!LOG.days[t]) LOG.days[t]={opened:new Date().toTimeString().slice(0,5),day:dayNum(),cards:[],total:0};
+  return LOG.days[t];
+}
+function logCard(rec){ var r=todayRec(); r.cards.push(rec); saveLog(LOG); }
+function logTotal(n){ var r=todayRec(); r.total=n; saveLog(LOG); }
+function logDebrief(field,val){
+  var t=today();
+  if(!LOG.debrief[t]) LOG.debrief[t]={};
+  LOG.debrief[t][field]=val; saveLog(LOG);
+}
 
-/* Day 3 · 택시·이동 */
-{d:2,sit:"🗣 (차 옆에서) \"Where are you going?\"\n\n폰에 목적지 주소를 띄웠다.",ko:"이 주소로 데려다 주실 수 있나요?",skel:"Can you take me to ___?",skelSub:"목적지를 맡기는 틀",en:"Can you take me to this address?",sound:"캔유 테익 미 투 디스 어드레스",pat:"이동 · 목적지",note:"화면을 보여주면서 말한다. take me to가 이 문장의 뼈대 — 뒤만 갈아끼우면 무한 활용."},
-{d:2,sit:"미터기를 안 켰다. 아직 출발 전이다.\n\n지금 물어야 한다.",ko:"얼마예요?",skel:"How much ___?",skelSub:"가격을 못 박는 틀",en:"How much is it?",sound:"하우 머치 이짓",pat:"돈 · 가격 확인",note:"is it이 붙어 <b>이짓</b>. 출발 <b>전에</b> 묻는 게 핵심 — 도착 후엔 부른 게 값이 된다."},
-{d:2,sit:"🗣 기사: \"Here?\"\n\n목적지 근처에 왔다.",ko:"여기서 내려 주세요.",skel:"You can drop me off ___.",skelSub:"내릴 곳을 알리는 틀",en:"You can drop me off here.",sound:"유 캔 드랍 미 오프 히어",pat:"이동 · 하차",note:"급하면 <b>Here is fine.</b> 로도 충분하다. drop off(내려주다)는 사람을 목적어로 가운데 넣는다."},
-{d:2,think:1,sit:"역 앞. 일행에게 이 열차를 타면 된다고 알려준다.",ko:"이 열차 타면 공항 가.",subjOpts:["You (네가)","This train (이 열차가)","The airport (공항이)"],subjAns:1,subjWhy:"<b>'~하면 ~할 수 있어'</b>는 그 <b>수단</b>이 주어다. '네가 타면'을 지우면 열차만 남는다.",skel:"This train ___ to the airport.",skelSub:"'열차가' 공항으로 간다",en:"This train goes to the airport.",sound:"디스 트레인 고즈 투 디 에어포트",pat:"영어식 사고 · 사물주어 + 동작",note:"같은 계열 — This bus takes you downtown. / This road takes you to the station."},
+/* ---------- 소리 ----------
+   iOS Safari는 SpeechSynthesisUtterance.rate 를 무시한다.
+   그래서 '천천히'는 rate가 아니라 단어를 쪼개 사이 공백(260ms)으로 구현한다. */
+function speak(t){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang="en-US";speechSynthesis.speak(u);}catch(e){}}
+function speakSlow(t){try{speechSynthesis.cancel();var w=String(t).split(/\s+/),i=0;
+  (function nx(){if(i>=w.length)return;var u=new SpeechSynthesisUtterance(w[i]);u.lang="en-US";
+   u.onend=function(){i++;setTimeout(nx,260);};speechSynthesis.speak(u);})();}catch(e){}}
 
-/* Day 4 · 호텔 */
-{d:3,sit:"🗣 프런트: \"Good evening. How can I help you?\"",ko:"체크인하러 왔어요.",skel:"I'm here to ___.",skelSub:"온 목적을 말하는 틀",en:"I'm here to check in.",sound:"아임 히어 투 체킨",pat:"호텔 · 체크인",note:"check in이 붙어 <b>체킨</b>. I'm here to ~ 는 어디서든 쓰인다 — I'm here to pick something up."},
-{d:3,sit:"아직 체크인 시간이 안 됐다.\n캐리어를 끌고 다닐 순 없다.",ko:"짐을 좀 맡아 주실 수 있나요?",skel:"Could you ___ my bags?",skelSub:"보관을 부탁하는 틀",en:"Could you hold my bags?",sound:"쿠쥬 홀드 마이 백스",pat:"호텔 · 짐 보관",note:"keep이 아니라 <b>hold</b>(잠깐 들고 있어달라). keep my bags는 가져도 된다는 뜻으로 들릴 수 있다."},
-{d:3,sit:"🗣 (방이 뭔가 이상하다. 프런트에 전화)\n\"Front desk, how may I help you?\"",ko:"방에 문제가 있어요.",skel:"There's something wrong with ___.",skelSub:"문제를 알리는 만능 틀",en:"There's something wrong with my room.",sound:"데어즈 썸띵 롱 위드 마이 룸",pat:"문제 · 신고",note:"<b>무엇이 문제인지 영어로 몰라도</b> 이 한 문장이면 사람이 온다. 나머지는 손으로 가리키면 된다."},
-{d:3,think:1,sit:"올라온 직원에게 뭐가 문제인지 짚어준다.",ko:"에어컨이 안 돌아가요.",subjOpts:["I (내가)","The AC (에어컨이)","The room (방이)"],subjAns:1,subjWhy:"고장은 <b>그 기계가 주어</b>다. '내가 못 켜겠다'가 아니라 '에어컨이 일을 안 한다'로 말한다.",skel:"The AC ___ working.",skelSub:"'에어컨이' 작동을 안 한다",en:"The AC isn't working.",sound:"디 에이씨 이즌 워킹",pat:"영어식 사고 · 사물주어 + isn't working",note:"모든 고장이 이 틀 하나 — The wifi isn't working. The shower isn't working. The key isn't working."},
-
-/* Day 5 · 식당 */
-{d:4,sit:"🗣 서버: \"How many?\"",ko:"두 명이요.",skel:"Table for ___, please.",skelSub:"인원을 말하는 틀",en:"Table for two, please.",sound:"테이블 포 투 플리즈",pat:"식당 · 자리",note:"혼자면 <b>Just one.</b> 손가락과 같이 하면 확실하다. We are two people은 번역투."},
-{d:4,sit:"🗣 서버: \"Are you ready to order?\"\n\n메뉴는 못 읽겠는데 사진은 있다.",ko:"이걸로 할게요.",skel:"I'll have ___.",skelSub:"주문의 기본 틀",en:"I'll have this one.",sound:"아일 해브 디스 원",pat:"식당 · 주문",note:"가리키면서 말한다. <b>This one, please.</b> 도 동일. I want~ 은 아이 말투로 들린다."},
-{d:4,sit:"🗣 서버: \"Anything else?\"\n\n메뉴가 낯설어 뭐가 유명한지 모르겠다.",ko:"뭐가 제일 인기 있어요?",skel:"What's the most ___?",skelSub:"추천을 끌어내는 틀",en:"What's the most popular?",sound:"왓츠 더 모스트 파퓰러",pat:"식당 · 추천 요청",note:"What do you recommend? 도 같은 값. 이 한 질문이 낯선 메뉴판을 통째로 해결한다."},
-{d:4,think:1,sit:"메뉴판을 보고 있는 일행에게 뭐라고 쓰여 있는지 묻는다.",ko:"메뉴판에 뭐라고 적혀 있어?",subjOpts:["You (네가)","The menu (메뉴판이)","It (그것이)"],subjAns:1,subjWhy:"질문형도 원리는 같다. <b>메뉴판이 뭐라고 말하냐</b>로 뒤집는다. What is written on the menu는 번역투.",skel:"What does the menu ___?",skelSub:"'메뉴판이' 뭐라고 말하나",en:"What does the menu say?",sound:"왓 더즈 더 메뉴 쎄이",pat:"영어식 사고 · say (의문형)",note:"What does the sign say? / What does it say? 로 통째 활용된다."},
-
-/* Day 6 · 돈·쇼핑 */
-{d:5,sit:"🗣 점원이 따라붙는다: \"Can I help you find something?\"\n\n그냥 둘러보는 중이다.",ko:"그냥 구경 중이에요, 감사합니다.",skel:"I'm just ___, thanks.",skelSub:"부드럽게 거절하는 틀",en:"I'm just looking, thanks.",sound:"아임 저슷 루킹 땡스",pat:"쇼핑 · 거절",note:"<b>이 말을 못 해서 끌려다니게 된다.</b> 웃으면서 말하면 바로 물러난다. No가 아니라 진행형으로 부드럽게."},
-{d:5,sit:"옷이 마음에 든다. 입어봐야겠다.",ko:"이거 입어봐도 될까요?",skel:"Can I try ___ on?",skelSub:"허락을 구하는 틀",en:"Can I try this on?",sound:"캐나이 트라이 디썬",pat:"쇼핑 · 착용",note:"this on이 붙어 <b>디썬</b>. try on 사이에 목적어를 끼운다 — try it on."},
-{d:5,sit:"🗣 점원: \"Cash or card?\"",ko:"카드로 낼 수 있나요?",skel:"Can I pay by ___?",skelSub:"결제 수단을 확인하는 틀",en:"Can I pay by card?",sound:"캐나이 페이 바이 카드",pat:"돈 · 결제",note:"수단은 <b>by</b>. 현금이면 Cash. 한 단어로 답해도 통한다."},
-{d:5,sit:"막 도착했다. 현금이 하나도 없다.",ko:"어디서 환전하나요?",skel:"Where can I ___?",skelSub:"장소를 묻는 만능 틀",en:"Where can I exchange money?",sound:"웨어 캐나이 익스체인지 머니",pat:"돈 · 환전",note:"Can I가 붙어 <b>캐나이</b>. 뒤만 갈아끼우면 무한 활용 — Where can I get a taxi? / Where can I buy a ticket?"},
-
-/* Day 7 · 문제·도움 */
-{d:6,sit:"🗣 계산서를 보니 시키지도 않은 게 올라가 있다.\n서버가 지나간다.",ko:"계산서에 문제가 있어요.",skel:"There's a problem with ___.",skelSub:"문제를 지목하는 틀",en:"There's a problem with the bill.",sound:"데어저 프라블럼 위더 빌",pat:"문제 · 항의",note:"There's a가 붙어 <b>데어저</b>. 사람을 탓하지 않고 <b>문제만</b> 지목하는 어른스러운 어투."},
-{d:6,sit:"길을 완전히 잃었다. 지도도 안 통한다.\n\n지나가는 사람에게 말을 건다.",ko:"좀 도와주실 수 있어요?",skel:"Could you ___ me?",skelSub:"도움을 요청하는 틀",en:"Could you help me?",sound:"쿠쥬 헬프 미",pat:"긴급 · 도움 요청",note:"먼저 <b>Excuse me.</b> 를 붙인다. 그 한 마디만으로 상대가 멈춰 선다."},
-{d:6,sit:"🗣 (사무실) 가방이 없어졌다.\n직원이 쳐다보며 \"Yes?\"",ko:"가방을 잃어버렸어요.",skel:"I ___ my bag.",skelSub:"일어난 일을 알리는 틀",en:"I lost my bag.",sound:"아이 로스트 마이 백",pat:"긴급 · 분실",note:"과거형 <b>lost</b>. 급할수록 짧고 정확한 게 잘 통한다. 문장을 길게 만들려다 아무 말도 못 하게 된다."},
-{d:6,think:1,sit:"약속에 늦었다. 왜 늦었는지 설명한다.",ko:"차가 막혀서 늦었어.",subjOpts:["I (내가)","The traffic (차 막힘이)","The road (길이)"],subjAns:1,subjWhy:"<b>'~때문에'</b>는 100% 그 <b>원인</b>이 주어다. 'I was late because of traffic'보다 훨씬 짧고 영어답다.",skel:"The traffic ___ me late.",skelSub:"'차 막힘이' 나를 늦게 만들었다",en:"The traffic made me late.",sound:"더 트래픽 메읻 미 레잇",pat:"영어식 사고 · make + 나 + 상태",note:"make + 나 + 상태 하나로 변명·감정이 전부 해결된다 — It made me nervous. It made me angry."},
-
-/* Day 8 · 스몰토크 */
-{d:7,sit:"🗣 옆자리 사람: \"Where are you from?\"",ko:"한국에서 왔어요.",skel:"I'm from ___.",skelSub:"출신을 말하는 틀",en:"I'm from Korea.",sound:"아임 프롬 코리아",pat:"스몰토크 · 출신",note:"답만 하고 끊지 말고 <b>And you?</b> 로 되물어야 대화가 이어진다. 스몰토크는 되묻기가 절반."},
-{d:7,sit:"🗣 상대: \"How do you like it here so far?\"",ko:"여기 정말 좋아요.",skel:"I ___ it here.",skelSub:"감상을 말하는 틀",en:"I love it here.",sound:"아이 러빗 히어",pat:"스몰토크 · 감상",note:"love it이 붙어 <b>러빗</b>. It's good. 보다 훨씬 원어민답고, 상대가 이야기를 더 꺼내게 만든다."},
-{d:7,sit:"대화를 마치고 자리를 뜬다.",ko:"만나서 반가웠어요.",skel:"It was nice ___ you.",skelSub:"헤어질 때의 틀",en:"It was nice meeting you.",sound:"잇 워즈 나이스 미링 유",pat:"스몰토크 · 작별",note:"meeting이 유음으로 <b>미링</b>. 처음 만난 사람에겐 meeting, 원래 알던 사람에겐 seeing."},
-{d:7,think:1,sit:"이번엔 내가 물어볼 차례다.\n상대가 왜 여기 왔는지 궁금하다.",ko:"여기 어떤 일로 오셨어요?",subjOpts:["You (네가)","Why (왜)","What (무엇이)"],subjAns:2,subjWhy:"<b>Why did you come here?</b> 는 따지는 느낌이 된다. <b>What</b>(무엇이) 너를 데려왔냐로 뒤집으면 부드러워진다. 이게 영어가 '돌려 말하는 것처럼' 느껴지는 정체다.",skel:"What ___ you here?",skelSub:"'무엇이' 너를 데려왔나",en:"What brought you here?",sound:"왓 브로츄 히어",pat:"영어식 사고 · bring + 사람",note:"brought you가 붙어 <b>브로츄</b>. 스몰토크를 여는 최고의 한 문장."},
-
-/* Day 9 · 총점검 🧠 */
-{d:8,think:1,sit:"아침에 커피를 마시고 정신이 들었다고 말한다.",ko:"커피 마셨더니 잠이 깼어.",subjOpts:["I (내가)","The coffee (커피가)","Sleep (잠이)"],subjAns:1,subjWhy:"'내가 마셨더니'를 버리고 나를 깨운 <b>원인</b>을 맨 앞에 세운다. 원인이 주어가 되는 순간 뒤가 저절로 이어진다.",skel:"The coffee ___ me up.",skelSub:"'커피가' 나를 깨웠다",en:"The coffee woke me up.",sound:"더 커피 웈 미 업",pat:"영어식 사고 · wake + 나 + up",note:"⚠️ <b>made me awake는 원어민이 쓰지 않는다.</b> woke me up(깨웠다) / keeps me awake(계속 잠 못 들게 한다)가 실제 표현이다."},
-{d:8,think:1,sit:"놀라운 소식을 듣고 반응을 말한다.",ko:"그 소식 듣고 진짜 놀랐어.",subjOpts:["I (내가)","The news (그 소식이)","It (그것이)"],subjAns:1,subjWhy:"'나는 놀랐다'로 시작하면 뒤에 붙일 말이 없어진다. 소식이 나에게 <b>한 짓</b>으로 뒤집는다.",skel:"The news really ___ me.",skelSub:"'소식이' 나를 놀라게 했다",en:"The news really surprised me.",sound:"더 뉴즈 리얼리 써프라이즛 미",pat:"영어식 사고 · 사물주어 + 감정동사",note:"⚠️ <b>made me so surprised보다 surprised me가 원어민 표현.</b> 같은 계열 — It scared me. It bothered me. It confused me."},
-{d:8,think:1,sit:"와이파이가 계속 끊긴다고 말한다.",ko:"와이파이가 자꾸 끊겨.",subjOpts:["I (내가)","The wifi (와이파이가)","The signal (신호가)"],subjAns:1,subjWhy:"<b>'자꾸 ~해'</b>는 <b>keep + -ing</b>. 주어는 그 짓을 하는 사물 그대로 둔다.",skel:"The wifi ___ cutting out.",skelSub:"'와이파이가' 계속 끊긴다",en:"The wifi keeps cutting out.",sound:"더 와이파이 킵스 커링 아웃",pat:"영어식 사고 · keep + -ing",note:"cutting out이 유음으로 <b>커링 아웃</b>. 반복되는 짜증 상황 전부 — He keeps calling me. It keeps happening."},
-{d:8,think:1,sit:"추운 날, 이 코트 덕분에 따뜻하다고 말한다.",ko:"이 코트 덕분에 따뜻해.",subjOpts:["I (내가)","The weather (날씨가)","This coat (이 코트가)"],subjAns:2,subjWhy:"<b>'덕분에'</b>가 나오면 그 덕분의 주인공이 곧 주어다. thanks to로 번역하지 않는다.",skel:"This coat ___ me warm.",skelSub:"'코트가' 나를 계속 따뜻하게 해준다",en:"This coat keeps me warm.",sound:"디스 코웃 킵스 미 웜",pat:"영어식 사고 · keep + 나 + 상태",note:"<b>make는 그 순간, keep은 계속 유지.</b> 이 둘을 구분하는 게 사물주어의 마지막 관문이다."}
+/* ---------- 커리큘럼 36장 ----------
+   출제 온톨로지 준수: Trigger(자극)를 채운다. 반응형 70% / 발동형 25% / 🧠 주어찾기 5%
+   type: react(상대 발화) | init(상태+기회+목표) | subj(🧠 주어 찾기) */
+var CARDS = [
+/* Day 1 — 못 알아들었을 때 (3단 사다리) */
+{d:1,t:"🔥 못 알아들었을 때",type:"react",trig:'점원이 뭐라고 빠르게 말했는데 하나도 못 알아들었다.',en:"Sorry?",yeon:"쏘리?",bone:"한 단어면 된다. 문장 만들지 마라.",fu:'점원이 다시 말했는데 여전히 빠르다 → "Could you say that again?"',trap:""},
+{d:1,t:"🔥 못 알아들었을 때",type:"react",trig:'두 번 들었는데도 속도가 그대로다.',en:"Can you speak slower, please?",yeon:"캔유 스픽 슬로워 플리즈",bone:"Can you ~ , please?",fu:'점원: "Sure. Is this better?"',trap:""},
+{d:1,t:"🔥 못 알아들었을 때",type:"react",trig:'점원: "It\'s complimentary." — 한 단어를 모르겠다.',en:"What does that mean?",yeon:"왓 더즈 댓 민",bone:"What does ~ mean?",fu:'점원: "It means it\'s free."',trap:""},
+{d:1,t:"🔥 못 알아들었을 때",type:"init",trig:"상대가 이름과 번호를 불러주는데 받아적질 못하겠다. 종이와 펜이 카운터에 있다.",en:"Could you write it down?",yeon:"쿠쥬 라이릿 다운",bone:"Could you ~ ?",fu:"이 3단 사다리가 해외 2주의 생명줄이다: Sorry? → slower → write it down",trap:"write it down = 라이트 잇 다운❌ 라이릿 다운⭕ (유음+연음)"},
+/* Day 2 — 공항·입국심사 */
+{d:2,t:"✈️ 공항·입국심사",type:"react",trig:'심사관: "What\'s the purpose of your visit?"',en:"Vacation.",yeon:"베이케이션",bone:"완전한 문장 금지. 한 단어.",fu:'심사관: "Business or pleasure?" → "Pleasure."',trap:'"I came here for vacation"은 통하지만 번역투 신호탄이다.'},
+{d:2,t:"✈️ 공항·입국심사",type:"react",trig:'심사관: "How long are you staying?"',en:"Two weeks.",yeon:"투 윅스",bone:"숫자 + 단위. 끝.",fu:'심사관: "And then?" → "Back to Korea."',trap:"weeks 끝소리를 흘리지 말 것."},
+{d:2,t:"✈️ 공항·입국심사",type:"react",trig:'심사관: "Where are you staying?"',en:"At a hotel.",yeon:"애러 호텔",bone:"At a ~",fu:'심사관: "Do you have the address?" → "Yes, right here."',trap:"At a = 앳 어❌ 애러⭕ (유음+연음)"},
+{d:2,t:"✈️ 공항·입국심사",type:"subj",trig:"표에 8시 출발이라고 적혀 있어.",en:"The ticket says 8 p.m.",yeon:"더 티킷 쎄즈 에잇 피엠",bone:"'적혀 있어' → say. 내가 아니라 표가 주어.",fu:"같은 틀: The sign says / The map says / The menu says",trap:'says = 쎄이즈❌ 쎄즈⭕ (철자에 속지 마라). 끝 Z는 목이 울려야 한다.'},
+/* Day 3 — 택시·이동 */
+{d:3,t:"🚕 택시·이동",type:"react",trig:'기사: "Where to?"',en:"This address, please.",yeon:"디스 어드레스 플리즈",bone:"주소를 보여주며 두 단어 + please.",fu:'기사: "Got it."',trap:"문장 만들지 말고 화면을 보여줘라."},
+{d:3,t:"🚕 택시·이동",type:"init",trig:"미터기가 안 보인다. 아직 안 탔다. 공항까지 얼마인지 먼저 알아야 한다.",en:"How much is it to the airport?",yeon:"하우 머치 이짓 투 디 에어포트",bone:"How much is it to ~ ?",fu:'기사: "About thirty." → "Okay, let\'s go."',trap:"is it = 이즈 잇❌ 이짓⭕"},
+{d:3,t:"🚕 택시·이동",type:"init",trig:"목적지 바로 앞이다. 차가 신호에 섰다. 여기서 내리고 싶다.",en:"You can drop me off here.",yeon:"유 캔 드랍 미 오프 히어",bone:"You can ~ here.",fu:'기사: "Right here?" → "Yes, thank you."',trap:""},
+{d:3,t:"🚕 택시·이동",type:"subj",trig:"이 기차 타면 시내 갈 수 있어.",en:"This train goes downtown.",yeon:"디스 트레인 고우즈 다운타운",bone:"'~하면 갈 수 있어' → 기차가 주어. goes/takes.",fu:"같은 틀: This bus takes you downtown.",trap:"goes 끝 Z — 고우스❌ 고우즈⭕"},
+/* Day 4 — 호텔 */
+{d:4,t:"🏨 호텔",type:"react",trig:'프런트 직원: "Checking in?"',en:"Yes, checking in.",yeon:"예스, 체키닌",bone:"여권 내밀고 두 단어.",fu:'직원: "Name, please?" → "Justin."',trap:'"I want to check in"은 번역투 신호탄. 짧을수록 원어민이다.'},
+{d:4,t:"🏨 호텔",type:"react",trig:'직원: "Your room isn\'t ready until three."',en:"Can I leave my bags here?",yeon:"캐나이 리브 마이 백즈 히어",bone:"Can I ~ here?",fu:'직원: "Of course. Here\'s your tag."',trap:'bags = 백스❌ 백즈⭕ (끝 Z + g 둘 다 목이 울려야 한다)'},
+{d:4,t:"🏨 호텔",type:"react",trig:'직원: "Is everything okay with the room?"',en:"There's a problem with the shower.",yeon:"데어저 프라블럼 위더 샤워",bone:"There's a problem with ~ (뒤에 명사만 갈아끼운다)",fu:'직원: "I\'ll send someone up."',trap:"There's a = 데어즈 어❌ 데어저⭕ (3단 연음)"},
+{d:4,t:"🏨 호텔",type:"subj",trig:"에어컨이 안 돼.",en:"The AC isn't working.",yeon:"디 에이씨 이즌 워킹",bone:"고장은 '내가'가 아니라 물건이 주어.",fu:"같은 틀: The shower / The WiFi / The key isn't working.",trap:""},
+/* Day 5 — 식당 */
+{d:5,t:"🍽 식당",type:"react",trig:'직원: "How many?"',en:"Table for two.",yeon:"테이블 포 투",bone:"세 단어. 문장 아님.",fu:'직원: "Follow me."',trap:""},
+{d:5,t:"🍽 식당",type:"react",trig:'서버: "Are you ready to order?"',en:"I'll have this one.",yeon:"아일 해브 디스 원",bone:"주문은 I'll have ~ . 가리키면서.",fu:'서버: "Anything to drink?" → "Just water, please."',trap:'"I want this"❌ — ASR은 통과시키지만 원어민에겐 어린애 말투.'},
+{d:5,t:"🍽 식당",type:"init",trig:"메뉴가 전부 낯설다. 서버가 옆에 서서 기다린다. 뭐가 잘 나가는지 알고 싶다.",en:"What's popular here?",yeon:"왓츠 파퓰러 히어",bone:"What's ~ here?",fu:'서버: "The steak is our best." → "I\'ll have that."',trap:""},
+{d:5,t:"🍽 식당",type:"subj",trig:"메뉴에 뭐라고 적혀 있어?",en:"What does the menu say?",yeon:"왓 더즈 더 메뉴 쎄이",bone:"'적혀 있어' → say. 메뉴가 주어.",fu:"답도 같은 틀: The menu says it's spicy.",trap:""},
+/* Day 6 — 돈·쇼핑 */
+{d:6,t:"🛍 돈·쇼핑",type:"react",trig:'점원: "Can I help you find something?"',en:"Just looking, thanks.",yeon:"저스 루킹, 땡스",bone:"점원을 막는 한마디. 세 단어.",fu:'점원: "Let me know if you need anything."',trap:""},
+{d:6,t:"🛍 돈·쇼핑",type:"init",trig:"마음에 드는 옷을 들고 있다. 점원이 눈을 마주쳤다. 입어보고 싶다.",en:"Can I try this on?",yeon:"캐나이 트라이 디손",bone:"Can I ~ ?",fu:'점원: "Fitting room is right there."',trap:"this on = 디스 온❌ 디손⭕ (또박또박 떼면 오히려 안 잡힌다)"},
+{d:6,t:"🛍 돈·쇼핑",type:"react",trig:'점원: "Cash or card?"',en:"Card, please.",yeon:"카드 플리즈",bone:"두 단어. 카드 내밀면서.",fu:'점원: "Tap here."',trap:'card = 카+드 2음절❌ → "카알드" 한 덩어리⭕'},
+{d:6,t:"🛍 돈·쇼핑",type:"react",trig:'안내데스크 직원: "Can I help you?" — 환전소를 못 찾겠다.',en:"Where can I exchange money?",yeon:"웨어 캐나이 익스체인지 머니",bone:"Where can I ~ ?",fu:'직원: "Second floor, next to the pharmacy."',trap:""},
+/* Day 7 — 문제·도움 */
+{d:7,t:"🆘 문제·도움",type:"init",trig:"계산서 금액이 이상하다. 서버가 옆을 지나간다. 지금 잡아야 한다.",en:"There's a problem with the bill.",yeon:"데어저 프라블럼 위더 빌",bone:"There's a problem with ~",fu:'서버: "Let me check that for you."',trap:"There's a = 데어저⭕ / there'**s** 끝 Z도 울려야 한다"},
+{d:7,t:"🆘 문제·도움",type:"react",trig:'경찰: "What happened?"',en:"I lost my bag.",yeon:"아이 로스 마이 백",bone:"주어+동사부터. 짧게.",fu:'경찰: "Where did you last see it?" → "In the taxi."',trap:'bag 끝 g가 죽으면 "back"으로 찍힌다. 끝에서 목이 한 번 울려야 한다.'},
+{d:7,t:"🆘 문제·도움",type:"init",trig:"폰이 꺼졌고 길을 모른다. 지나가는 사람이 눈을 마주쳤다.",en:"Can you help me?",yeon:"캔유 헬프 미",bone:"Can you ~ ?",fu:'행인: "Sure, what do you need?" → "I\'m looking for this address."',trap:""},
+{d:7,t:"🆘 문제·도움",type:"subj",trig:"차가 막혀서 늦었어.",en:"The traffic made me late.",yeon:"더 트래픽 메이미 레잇",bone:"'때문에' → make. '나'를 지우고 일으킨 것을 앞에 세운다.",fu:"같은 틀: The rain made me late. / The line made me wait.",trap:'made me = 메이드 미❌ 메이미⭕ (d 탈락). 발음하려 버티면 오히려 틀린다.'},
+/* Day 8 — 스몰토크 */
+{d:8,t:"💬 스몰토크",type:"react",trig:'옆자리 사람: "Where are you from?"',en:"I'm from Korea.",yeon:"아임 프롬 코리아",bone:"I'm from ~",fu:'상대: "First time here?" → "Yes, first time."',trap:""},
+{d:8,t:"💬 스몰토크",type:"react",trig:'상대: "How do you like it here?"',en:"I love it here.",yeon:"아이 러빗 히어",bone:"I love it ~",fu:'상대: "What have you seen so far?"',trap:"love it = 러브 잇❌ 러빗⭕"},
+{d:8,t:"💬 스몰토크",type:"react",trig:'헤어질 때 상대: "It was nice talking to you."',en:"Nice meeting you.",yeon:"나이스 미링유",bone:"두 단어 + you.",fu:"상대가 손을 내민다.",trap:"meeting you = 미팅 유❌ 미링유⭕ (유음)"},
+{d:8,t:"💬 스몰토크",type:"subj",trig:"여기 어떤 일로 왔어? (내가 먼저 묻는다)",en:"What brought you here?",yeon:"왓 브로츄 히어",bone:"'왜 왔어?' → What brought. 무엇이 너를 데려왔나.",fu:"상대가 답하면 → \"Oh, nice. How long?\"",trap:"brought you = 브로트 유❌ 브로츄⭕"},
+/* Day 9 — 🧠 총점검 */
+{d:9,t:"🧠 총점검",type:"subj",trig:"커피 마셨더니 잠이 깼어.",en:"The coffee woke me up.",yeon:"더 커피 워크 미 업",bone:"커피가 주어. 나를 깨웠다.",fu:"❌ The coffee made me awake — 원어민은 이렇게 안 쓴다.",trap:""},
+{d:9,t:"🧠 총점검",type:"subj",trig:"그 소식 때문에 진짜 놀랐어.",en:"The news really surprised me.",yeon:"더 뉴즈 리얼리 써프라이즈드 미",bone:"'때문에' → 소식이 주어.",fu:"❌ The news made me so surprised — 원어민은 이렇게 안 쓴다.",trap:"news 끝 Z — 뉴스❌ 뉴즈⭕"},
+{d:9,t:"🧠 총점검",type:"subj",trig:"와이파이가 자꾸 끊겨.",en:"The WiFi keeps cutting out.",yeon:"더 와이파이 킵스 커링 아웃",bone:"'자꾸 ~해' → keeps -ing",fu:"같은 틀: The line keeps moving. / It keeps raining.",trap:"cutting = 커팅❌ 커링⭕ (유음)"},
+{d:9,t:"🧠 총점검",type:"subj",trig:"이 코트 덕분에 따뜻해.",en:"This coat keeps me warm.",yeon:"디스 코트 킵스 미 웜",bone:"'덕분에' → keep. 코트가 주어.",fu:"같은 틀: This bag keeps my laptop safe.",trap:""}
 ];
+CARDS.forEach(function(c,i){c.id="c"+(i+1);});
 
-function dayIndex(){var n=new Date();var t=new Date(n.getFullYear(),n.getMonth(),n.getDate());
-  var p=EPOCH.split("-");var e=new Date(+p[0],+p[1]-1,+p[2]);return Math.round((t-e)/86400000);}
-var D=dayIndex();
-for(var i=0;i<DECK.length;i++)DECK[i].id=i;
-
-var queue=[];
-for(var i=0;i<DECK.length;i++){var c=DECK[i];var g=D-c.d;if(g>0&&INTERVALS.indexOf(g)>=0)queue.push({card:c,kind:"복습",sd:0});}
-for(var i=0;i<DECK.length;i++){var c=DECK[i];if(c.d===D)queue.push({card:c,kind:"신규",sd:0});}
-
-var pos=0,hardList=[],retry=[],inRetry=false,sessionCards=[];
-var $=function(id){return document.getElementById(id);};
-var _dp=DEP.split("-");var _n0=new Date();var _dd=Math.round((new Date(+_dp[0],+_dp[1]-1,+_dp[2])-new Date(_n0.getFullYear(),_n0.getMonth(),_n0.getDate()))/86400000);
-$("dayLabel").textContent="Day "+(D+1)+(_dd>0?" · D-"+_dd:" · 현지");
-function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
-function q(s){return String(s).replace(/'/g,"\\'").replace(/"/g,'\\"');}
-
-var voices=[];
-function loadVoices(){try{voices=speechSynthesis.getVoices();}catch(e){}}
-loadVoices();
-if(typeof speechSynthesis!=="undefined"&&speechSynthesis.onvoiceschanged!==undefined)speechSynthesis.onvoiceschanged=loadVoices;
-function pickVoice(){var pref=["Samantha","Google US English","Microsoft Aria","Alex"];
-  for(var i=0;i<pref.length;i++)for(var j=0;j<voices.length;j++)if(voices[j].name.indexOf(pref[i])>=0)return voices[j];
-  for(var j=0;j<voices.length;j++)if(voices[j].lang==="en-US")return voices[j];
-  for(var j=0;j<voices.length;j++)if(voices[j].lang.indexOf("en")===0)return voices[j];return null;}
-var _bcls="";
-function speak(t,r,btn){try{stopSlow();speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang="en-US";u.rate=r;
-  var v=pickVoice();if(v)u.voice=v;
-  if(btn){_bcls=btn.className;btn.className=_bcls+" playing";
-    u.onend=function(){btn.className=_bcls;};u.onerror=function(){btn.className=_bcls;};}
-  speechSynthesis.speak(u);}catch(e){}}
-
-/* ---- 천천히 = 단어별 끊어 읽기 ----
-   iOS Safari는 utterance.rate 를 무시하는 경우가 많아 rate만으로는 느려지지 않는다.
-   그래서 문장을 단어로 쪼개 하나씩 재생하고 사이에 공백을 넣는다. 모든 기기에서 확실히 느려진다. */
-var _slowT=null,_slowStop=false;
-function stopSlow(){_slowStop=true;if(_slowT){clearTimeout(_slowT);_slowT=null;}}
-function speakSlow(t,btn,gap){
-  try{
-    stopSlow();speechSynthesis.cancel();_slowStop=false;
-    var words=String(t).split(/\s+/).filter(Boolean);
-    var G=gap||260,i=0,base=btn?btn.className:"";
-    if(btn)btn.className=base+" playing";
-    function done(){if(btn)btn.className=base;_slowT=null;}
-    function next(){
-      if(_slowStop)return;
-      if(i>=words.length){done();return;}
-      var w=words[i++],moved=false;
-      function go(){if(moved||_slowStop)return;moved=true;_slowT=setTimeout(next,G);}
-      var u=new SpeechSynthesisUtterance(w);
-      u.lang="en-US";u.rate=0.6;
-      var v=pickVoice();if(v)u.voice=v;
-      u.onend=go;u.onerror=go;
-      speechSynthesis.speak(u);
-      setTimeout(go,1500+w.length*120);   /* onend가 안 오는 기기 대비 */
-    }
-    next();
-  }catch(e){if(btn)btn.className=btn.className.replace(" playing","");}
+/* ---------- 오늘의 큐 ---------- */
+function buildQueue(){
+  var n=dayNum(), q=[];
+  CARDS.filter(function(c){return c.d===n;}).forEach(function(c){q.push({c:c,rev:false});});
+  REVIEW.forEach(function(gap){
+    var src=n-gap; if(src<1) return;
+    CARDS.filter(function(c){return c.d===src;}).forEach(function(c){q.push({c:c,rev:true});});
+  });
+  return q.slice(0,CAP);
 }
 
-function curList(){return inRetry?retry:queue;}
-function curIdx(){return inRetry?pos-queue.length:pos;}
+/* ---------- 상태 ---------- */
+var TAB="train", queue=[], idx=0, shownAt=0, revealed=false, sessionLog=[];
 
-function renderCard(){
-  var list=curList(),idx=curIdx();
-  if(!inRetry&&pos>=queue.length){if(retry.length>0){inRetry=true;renderCard();return;}renderEnd();return;}
-  if(inRetry&&idx>=retry.length){renderEnd();return;}
-  var item=list[idx],c=item.card,tot=queue.length+retry.length;
-  $("qpos").textContent=(pos+1)+" / "+tot;
-  $("qkind").textContent=inRetry?"🔁 한 번 더":(item.kind==="신규"?"✨ 신규 · "+LABELS[c.d]:"복습 · "+LABELS[c.d]);
-  $("prog").style.width=(pos/tot*100)+"%";
-  if(c.think&&!item.sd){renderSubjQ(item,c);return;}
-  $("cardArea").innerHTML='<div class="card">'+
-    '<span class="tag '+(item.kind==="신규"?"new":"rev")+'">'+(inRetry?"🔁 한 번 더":item.kind)+'</span>'+
-    (c.think?'<span class="tag think">🧠 영어식 사고</span>':'')+
-    '<div class="sitlabel">상황</div><div class="sit">'+esc(c.sit)+'</div>'+
-    hearBox(c)+
-    '<div class="hint">🎤 <b>소리 내서</b> 영어로 답해보세요. 안 나와도 3초는 버티기.<br>키보드 <b>지구본 꾹 → English</b> → 마이크로 말한 그대로 아래에 넣기.</div>'+
-    '<textarea id="sayBox" style="width:100%;box-sizing:border-box;margin:12px 0 4px;padding:11px 12px;border-radius:12px;border:1px solid #46463c;background:#26261f;color:#f0f0e6;font-size:16px;line-height:1.5;min-height:58px;font-family:inherit;resize:vertical" placeholder="🎤 여기에 받아쓰기로 말하기 (건너뛰어도 됩니다)" oninput="saveSaid(this.value)">'+esc(item.said||"")+'</textarea>'+
-    '<button class="btn primary" id="btnReveal" onclick="reveal()">정답 확인</button>'+
-    '<button class="btn mini" id="btnSkel" onclick="showSkel()">🦴 뼈대 힌트 보기</button></div>';
+function el(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+var TABS=[["train","🔥 훈련"],["subj","🧠 주어"],["sent","📚 문장"],["sound","🔊 소리"],["help","📖 사용법"]];
+function renderNav(){
+  el("nav").innerHTML=TABS.map(function(t){return '<button data-t="'+t[0]+'" class="'+(TAB===t[0]?"on":"")+'">'+t[1]+'</button>';}).join("");
+  Array.prototype.forEach.call(el("nav").children,function(b){b.onclick=function(){TAB=b.getAttribute("data-t");render();};});
+}
+function renderHeader(){
+  el("verStamp").textContent=VERSION;
+  var dd=dDay();
+  el("dayBadge").textContent = isDebrief() ? ("해외 "+(1-dd)+"일차 · 밤 복기") : ("Day "+dayNum()+" · D-"+dd);
 }
 
-function renderSubjQ(item,c){
-  var o="";
-  for(var i=0;i<c.subjOpts.length;i++)
-    o+='<button class="opt" id="op'+i+'" onclick="pickSubj('+i+')">'+esc(c.subjOpts[i])+'</button>';
-  $("cardArea").innerHTML='<div class="card">'+
-    '<span class="tag think" style="margin-left:0">🧠 주어 찾기</span>'+
-    '<div class="subjq">'+esc(c.ko)+'</div>'+
-    '<div class="subjask">이걸 영어로 말할 때, 맨 앞(주어)에 뭘 세울까요?</div>'+o+'</div>';
+/* ================= 훈련 탭 ================= */
+function renderTrain(){
+  if(isDebrief()) return renderDebrief();
+  if(dayNum()<1){el("main").innerHTML='<div class="card">아직 시작일 전이다.</div>';return;}
+  if(!queue.length){queue=buildQueue();idx=0;sessionLog=[];logTotal(queue.length);}
+  if(!queue.length){el("main").innerHTML='<div class="card"><b>오늘 새 카드가 없다.</b><div class="guide">다른 탭에서 복습하거나, 내일 다시 열면 된다.</div></div>';return;}
+  if(idx>=queue.length) return renderDone();
+
+  var item=queue[idx], c=item.c;
+  var tag = item.rev?'<span class="tag t-rev">복습</span>':(c.type==="subj"?'<span class="tag t-brain">🧠 주어 찾기</span>':'<span class="tag t-new">신규</span>');
+  var prompt = c.type==="subj"
+      ? '<div class="lbl">한국어</div><div class="ko">'+esc(c.trig)+'</div>'
+      : '<div class="lbl">'+(c.type==="react"?"상대가 던진 말":"상황")+'</div><div class="trig">'+(c.type==="react"?"🗣 ":"")+esc(c.trig)+'</div>';
+
+  el("main").innerHTML =
+    '<div class="meta"><span>'+(idx+1)+' / '+queue.length+'</span><span>'+(item.rev?"복습 · ":"")+esc(c.t)+'</span></div>'+
+    '<div class="card">'+tag+prompt+
+      (c.type==="react"?'<div class="row"><button class="btn" id="bSpeak">▶ 상대 말 듣기</button><button class="btn" id="bSlow">🐢 단어별 천천히</button></div>':'')+
+      '<div class="guide">🎤 소리 내서 영어로 말해보세요. <b>안 나와도 3초는 버티기.</b><br>키보드 지구본 꾹 → English → 마이크로 말한 그대로 아래에 넣기.</div>'+
+      '<textarea id="sayBox" rows="2" placeholder="🎤 여기에 받아쓰기로 말하기 (건너뛰어도 됩니다)"></textarea>'+
+      '<button class="btn primary" id="btnReveal">정답 확인</button>'+
+      '<button class="btn" id="btnBone">🦴 뼈대 힌트 보기</button>'+
+      '<div id="boneBox"></div><div id="ansBox"></div>'+
+    '</div>';
+
+  shownAt=Date.now(); revealed=false;
+  if(c.type==="react"){el("bSpeak").onclick=function(){speak(stripQ(c.trig));};el("bSlow").onclick=function(){speakSlow(stripQ(c.trig));};}
+  el("btnBone").onclick=function(){el("boneBox").innerHTML='<div class="hint">🦴 '+esc(c.bone)+'</div>';};
+  el("btnReveal").onclick=reveal;
 }
-
-function pickSubj(i){
-  var item=curList()[curIdx()],c=item.card;
-  if(i!==c.subjAns){
-    var b=$("op"+i);if(b)b.className="opt wrong";
-    var h=$("subjHint");
-    if(!h){h=document.createElement("div");h.id="subjHint";h.className="why";
-      h.innerHTML="❌ 그 주어로는 뒤가 잘 안 이어져요. <b>이 일을 일으킨 것</b>이 뭔지 다시 찾아보세요.";
-      document.querySelector(".card").appendChild(h);}
-    return;
-  }
-  $("op"+i).className="opt right";
-  item.sd=1;
-  var h=$("subjHint");if(h)h.parentNode.removeChild(h);
-  var w=document.createElement("div");w.className="why";
-  w.innerHTML="✅ "+c.subjWhy;
-  var btn=document.createElement("button");
-  btn.className="btn primary";btn.style.marginTop="12px";
-  btn.textContent="→ 이제 이 주어로 문장을 완성해보세요";
-  btn.onclick=renderCard;
-  var card=document.querySelector(".card");card.appendChild(w);card.appendChild(btn);
-}
-
-function saveSaid(v){var it=curList()[curIdx()];if(it)it.said=v;}
-
-function hearLine(c){var m=String(c.sit).match(/"([A-Za-z][^"]*)"/);return m?m[1]:null;}
-function hearBox(c){var h=hearLine(c);if(!h)return "";
-  return '<div class="listen" style="margin:10px 0 2px">'+
-    '<button onclick="speak(\''+q(h)+'\',1.0,this)">\u25b6 상대 말 듣기</button>'+
-    '<button onclick="speakSlow(\''+q(h)+'\',this)">🐢 단어별 천천히</button></div>';}
-
-function showSkel(){
-  var c=curList()[curIdx()].card;var b=$("btnSkel");if(b)b.style.display="none";
-  var h=document.createElement("div");h.className="skel";
-  h.innerHTML='<div class="lbl">뼈대 먼저</div><div class="txt">'+esc(c.skel)+'</div><div class="sub">'+esc(c.skelSub)+'</div>';
-  var rv=$("btnReveal");rv.parentNode.insertBefore(h,rv);
-}
+function stripQ(s){var m=s.match(/"([^"]+)"/);return m?m[1]:s;}
 
 function reveal(){
-  var it=curList()[curIdx()],c=it.card;
-  var saidHtml=(it.said&&it.said.trim())?'<div class="note" style="border-left:3px solid #d9a441">🎤 네가 말한 것: <b>'+esc(it.said.trim())+'</b><br><span style="opacity:.75">받아쓰기가 이상하게 찍혔다면 오타가 아니라 <b>발음이 안 잡힌 지점</b>입니다.</span></div>':'';
-  $("cardArea").innerHTML='<div class="card">'+
-    '<div class="sitlabel">상황</div><div class="sit" style="font-size:15px;color:#9b9b90;margin-bottom:14px">'+esc(c.sit)+'</div>'+
-    '<div class="en">'+esc(c.en)+'</div><div class="sound">🔊 '+esc(c.sound)+'</div><div class="kos">'+esc(c.ko)+'</div>'+
-    '<div class="listen"><button onclick="speakSlow(\''+q(c.en)+'\',this)">🐢 단어별 천천히</button>'+
-    '<button onclick="speak(\''+q(c.en)+'\',1.0,this)">▶ 원어민 속도</button></div>'+
-    '<div class="shadow"><p>따라 말하기 3회 — 할 때마다 눌러 체크</p><div class="dots">'+
-    '<button class="dot" onclick="this.className=\'dot done\'">1</button>'+
-    '<button class="dot" onclick="this.className=\'dot done\'">2</button>'+
-    '<button class="dot" onclick="this.className=\'dot done\'">3</button></div></div>'+
-    saidHtml+'<span class="pat">🧩 '+esc(c.pat)+'</span><div class="note">💡 '+c.note+'</div>'+
-    '<div class="grade"><button class="g-hard" onclick="grade(0)">😵 어려웠어</button>'+
-    '<button class="g-easy" onclick="grade(1)">😎 쉬웠어</button></div></div>';
+  if(revealed) return; revealed=true;
+  var item=queue[idx], c=item.c;
+  var secs=Math.round((Date.now()-shownAt)/100)/10;
+  var typed=(el("sayBox").value||"").trim();
+  el("btnReveal").style.display="none";
+  el("ansBox").innerHTML =
+    '<div class="ans"><div class="en">'+esc(c.en)+'</div><div class="yeon">'+esc(c.yeon)+'</div>'+
+      '<div class="row"><button class="btn" id="aSpeak">▶ 듣기</button><button class="btn" id="aSlow">🐢 천천히</button></div>'+
+      (c.trap?'<div class="trap">🎯 '+esc(c.trap)+'</div>':'')+
+      (c.fu?'<div class="fu">↩️ '+esc(c.fu)+'</div>':'')+
+    '</div>'+
+    '<div class="guide" style="margin-top:12px">방금 <b>입에서 나왔나?</b></div>'+
+    '<div class="row"><button class="btn ok" id="gOk">나왔다</button><button class="btn no" id="gNo">안 나왔다</button></div>';
+  el("aSpeak").onclick=function(){speak(c.en);};
+  el("aSlow").onclick=function(){speakSlow(c.en);};
+  el("gOk").onclick=function(){grade(1,secs,typed,c,item);};
+  el("gNo").onclick=function(){grade(0,secs,typed,c,item);};
 }
 
-function grade(easy){
-  var item=curList()[curIdx()];
-  if(sessionCards.indexOf(item.card)<0)sessionCards.push(item.card);
-  if(!easy){if(hardList.indexOf(item.card)<0)hardList.push(item.card);
-    if(!inRetry)retry.push({card:item.card,kind:item.kind,sd:1});}
-  pos++;renderCard();
+function grade(out,secs,typed,c,item){
+  var rec={id:c.id,day:c.d,type:c.type,rev:!!item.rev,sec:secs,typed:typed.length>0,said:typed.slice(0,120),out:out};
+  logCard(rec); sessionLog.push(rec);
+  if(!out) queue.push({c:c,rev:true});   // 안 나온 건 오늘 안에 한 번 더
+  idx++; render();
 }
 
-/* 속도 훈련 */
-var spList=[],spIdx=0,spTimer=null;
-function startSpeed(){
-  spList=sessionCards.slice();
-  if(!spList.length)spList=DECK.filter(function(c){return c.d<=Math.min(D,8);}).slice(0,6);
-  spIdx=0;$("qpos").textContent="";$("qkind").textContent="⚡ 속도 훈련";speedStep();
-}
-function speedStep(){
-  if(spTimer){clearInterval(spTimer);spTimer=null;}
-  if(spIdx>=spList.length){
-    $("cardArea").innerHTML='<div class="card fin"><div class="big">⚡</div><h2>속도 훈련 끝!</h2>'+
-      '<p>생각의 속도를 단축하는 게 실전 스피킹의 완성입니다.</p>'+
-      '<button class="btn primary" onclick="startSpeed()">🔁 한 번 더 돌리기</button></div>';return;}
-  var c=spList[spIdx],t=3;
-  $("cardArea").innerHTML='<div class="card speed"><div class="cnt">'+(spIdx+1)+' / '+spList.length+'</div>'+
-    '<div class="s">'+esc(c.sit)+'</div><div class="timer" id="tm">3</div>'+
-    '<p style="font-size:13px;color:#9b9b90;font-weight:700">지금 소리 내서 말하세요</p></div>';
-  spTimer=setInterval(function(){
-    t--;var el=$("tm");if(el)el.textContent=t>0?t:"!";
-    if(t<=0){clearInterval(spTimer);spTimer=null;
-      $("cardArea").innerHTML='<div class="card speed"><div class="cnt">'+(spIdx+1)+' / '+spList.length+'</div>'+
-        '<div class="s" style="font-size:15px;color:#9b9b90">'+esc(c.sit)+'</div>'+
-        '<div class="ans">'+esc(c.en)+'</div><div class="sound" style="margin-top:6px">🔊 '+esc(c.sound)+'</div>'+
-        '<div class="listen"><button onclick="speak(\''+q(c.en)+'\',1.0,this)">▶ 들어보기</button></div>'+
-        '<button class="btn primary" style="margin-top:12px" onclick="spIdx++;speedStep()">다음 →</button></div>';
-      speak(c.en,1.0,null);}
-  },1000);
+function renderDone(){
+  var r=todayRec(), n=sessionLog.length;
+  var ok=sessionLog.filter(function(x){return x.out;}).length;
+  var spoke=sessionLog.filter(function(x){return x.typed;}).length;
+  var avg=n?Math.round(sessionLog.reduce(function(a,b){return a+b.sec;},0)/n*10)/10:0;
+  var miss=sessionLog.filter(function(x){return !x.out;});
+  el("main").innerHTML=
+    '<div class="card"><div class="big">오늘 끝.</div>'+
+      '<div class="stat"><div><b>'+ok+'/'+n+'</b><span>나왔다</span></div>'+
+      '<div><b>'+spoke+'</b><span>입 뗀 카드</span></div>'+
+      '<div><b>'+avg+'초</b><span>평균 생성시간</span></div></div>'+
+      '<div class="guide">평균 생성시간이 줄어드는 게 목표다. 정확도가 아니라 <b>속도</b>가 실력이다.</div>'+
+      (miss.length?'<div class="hint"><b>오늘 안 나온 것</b><br>'+miss.map(function(m){var c=CARDS.filter(function(x){return x.id===m.id;})[0];return "· "+esc(c.en);}).join("<br>")+'</div>':'')+
+      '<div class="guide" style="margin-top:14px">기록은 폰에 자동 저장됐다. <b>아무것도 안 눌러도 된다.</b><br>코치에게 보여주고 싶으면 📖 사용법 탭 맨 아래에 있다.</div>'+
+    '</div>';
 }
 
-/* 주어 고르기 드릴 (독립) */
-var sdList=[],sdIdx=0,sdScore=0;
-function startSubjDrill(){
-  var pool=DECK.filter(function(c){return c.think;});
-  sdList=pool.slice().sort(function(){return Math.random()-0.5;}).slice(0,10);
-  sdIdx=0;sdScore=0;sdStep();
+/* ================= 밤 복기 모드 (출국일부터 자동) ================= */
+var FEEL=[["awkward","어색해·뻘쭘해·민망해·분위기 싸해"],["weird","이상해·희한해·묘해·찜찜해"],["hurt","아파·서운해·상처받았어·안타까워"],["upset","화나·기분 상했어·속상해·심난해"],["bother","신경 쓰여·거슬려·마음에 걸려"],["relieved","안심돼·다행이야·마음 놓인다·후련해"],["frustrated","답답해·짜증나·속 터져"],["overwhelmed","벅차·정신없어·감당 안 돼·압도된다"],["excited","신나·들떠·설레·기대돼"]];
+function renderDebrief(){
+  var t=today(), saved=(LOG.debrief[t]||{});
+  el("main").innerHTML=
+    '<div class="card"><div class="big">밤 복기</div>'+
+      '<div class="guide">오늘 실제로 막힌 지점이 내일의 교재다. <b>완벽하게 쓰지 마라. 한 줄이면 된다.</b></div></div>'+
+    '<div class="card"><div class="lbl">① 하려다 못 한 말</div>'+
+      '<div class="guide">영어로 뭐라 할지 몰라서 삼킨 한국어 문장.</div>'+
+      '<textarea id="dStuck" rows="4" placeholder="예: 이거 포장돼요? / 저 사람 때문에 늦었어">'+esc(saved.stuck||"")+'</textarea>'+
+      '<button class="btn primary" id="sStuck">저장</button></div>'+
+    '<div class="card"><div class="lbl">② 못 알아들은 말</div>'+
+      '<div class="guide">상대가 했는데 못 알아들은 말. 소리 나는 대로 적어도 된다.</div>'+
+      '<textarea id="dMiss" rows="4" placeholder="예: 계산할 때 뭐라고 물어봤는데 &quot;포히얼오투고&quot; 같이 들렸다">'+esc(saved.missed||"")+'</textarea>'+
+      '<button class="btn primary" id="sMiss">저장</button></div>'+
+    '<div class="card"><div class="lbl">단어가 안 떠올랐다면 — 느낌으로 잡아라</div>'+
+      '<div class="guide">한국어 단어를 찾지 말고 ① 상황을 보고 ② 본질 느낌을 잡고 ③ 아는 단어 하나로 퉁쳐라.</div>'+
+      '<table><tr><th>영어</th><th>이 한국어들이 전부 이 한 단어</th></tr>'+
+      FEEL.map(function(f){return "<tr><td><b>"+f[0]+"</b></td><td>"+f[1]+"</td></tr>";}).join("")+'</table>'+
+      '<div class="hint">강도 조절: <b>a little / kind of / pretty</b> 를 앞에 붙인다. "좀 서운해" = kind of hurt</div></div>';
+  el("sStuck").onclick=function(){logDebrief("stuck",el("dStuck").value);el("sStuck").textContent="저장됨 ✓";};
+  el("sMiss").onclick=function(){logDebrief("missed",el("dMiss").value);el("sMiss").textContent="저장됨 ✓";};
+}
+
+/* ================= 🧠 주어 탭 ================= */
+function renderSubj(){
+  el("main").innerHTML=
+    '<div class="card"><div class="big">주어 찾기 4단계</div>'+
+      '<p>1. "내가 / 네가"를 지운다<br>2. 이 일을 <b>일으킨 것</b>을 찾는다<br>3. 맨 앞에 세운다<br>4. 동사는 아래 6개 중 하나</p>'+
+      '<div>'+["make (그 순간)","keep (계속)","tell (알려줌)","say (적혀 있음)","take/bring (데려감)","give (줌)"].map(function(v){return '<span class="pill">'+v+'</span>';}).join("")+'</div></div>'+
+    '<div class="card"><div class="lbl">한국어 신호탄 — 이 말이 나오면 바로 뒤집어라</div>'+
+      '<table>'+
+      [["때문에 / 덕분에","make · keep"],["~하면 ~할 수 있어","take"],["적혀 있어","say"],["보니까 ~같아","tell me"],["자꾸 ~해","keep -ing"],["왜 ~했어?","What brought"]]
+      .map(function(r){return "<tr><td>"+r[0]+"</td><td><b>"+r[1]+"</b></td></tr>";}).join("")+'</table></div>'+
+    '<div class="card"><div class="lbl">직접 뒤집어 보기</div>'+
+      CARDS.filter(function(c){return c.type==="subj";}).map(function(c){
+        return '<div style="border-bottom:1px solid #232c39;padding:9px 0"><div style="font-weight:700">'+esc(c.trig)+'</div>'+
+               '<div class="muted" style="margin-top:3px">탭해서 확인 ▾</div>'+
+               '<div style="display:none"><div class="en" style="font-size:17px">'+esc(c.en)+'</div><div class="yeon">'+esc(c.yeon)+'</div></div></div>';
+      }).join("")+'</div>';
+  Array.prototype.forEach.call(el("main").querySelectorAll('div[style*="border-bottom"]'),function(d){
+    d.onclick=function(){var h=d.lastChild;h.style.display=h.style.display==="none"?"block":"none";};
+  });
+}
+
+/* ================= 📚 문장 탭 ================= */
+var FRAMES=[["Can I get ~ ?","받을 수 있을까요"],["Can I ~ ?","해도 될까요"],["I'll have ~","이걸로 주세요"],["Where's the ~ ?","어디예요"],["How much is ~ ?","얼마예요"],["The ~ isn't working","고장났어요"],["Something's wrong with ~","뭔가 이상해요"],["Sorry? → slower → write it down","3단 사다리"]];
+function renderSent(){
+  var byDay={};CARDS.forEach(function(c){(byDay[c.d]=byDay[c.d]||[]).push(c);});
+  var html='<div class="card"><div class="lbl">틀 8개 — 문장 36개보다 이게 먼저다</div>'+
+    FRAMES.map(function(f){return '<span class="pill">'+esc(f[0])+'</span>';}).join("")+
+    '<div class="guide" style="margin-top:10px">뒤에 명사만 갈아끼우면 대부분이 처리된다. 문장을 새로 만들지 마라.</div></div>';
+  Object.keys(byDay).sort(function(a,b){return a-b;}).forEach(function(d){
+    html+='<div class="card"><div class="lbl">Day '+d+' · '+esc(byDay[d][0].t)+'</div><table>'+
+      byDay[d].map(function(c){return "<tr><td><b>"+esc(c.en)+"</b><br><span class='yeon'>"+esc(c.yeon)+"</span></td></tr>";}).join("")+
+      '</table></div>';
+  });
+  el("main").innerHTML=html;
+}
+
+/* ================= 🔊 소리 탭 ================= */
+var SOUNDS=[
+ ["연음 (Linking)","앞 단어 끝소리 + 뒷 단어 첫소리가 이어진다","Can I get a water?","캐나이 게러 워러"],
+ ["유음 (Flap T/D)","혀를 윗잇몸에 살짝 튕기듯. T가 ㄹ로","get a / medium / cutting","게러 / 미리엄 / 커링"],
+ ["끝 Z 유성음","S와 혀 위치는 같고 목만 울린다","says / goes / bags / rooms","쎄즈 / 고우즈 / 백즈 / 룸즈"],
+ ["자음군 탈락","또박또박 발음하려는 노력이 오히려 실패를 만든다","made me / don't know / kept me","메이미 / 돈 노 / 켑미"],
+ ["1음절을 2음절로 늘리지 않기","한국어는 자음 뒤에 모음을 붙이는 습관이 있다","card / bag / cash","카알드 / 백 / 캐쉬"],
+ ["H 생략","숨 뱉듯. 목에 손 대면 안 울린다","Could you have it?","쿠쥬 애빗"],
+ ["TH 혀 위치","혀를 앞니 사이에 끼웠다 뺀다","with / thanks / three","위드 / 땡스 / 쓰리"],
+ ["모음 강조","모음이 겹치면 다 살려 길게","cheese / school","치이즈 / 스쿠울"]
+];
+function renderSound(){
+  el("main").innerHTML='<div class="card"><div class="guide">안 들리는 순간은 <b>원어민이 부드럽게 흘려 발음할 때</b>다. 어휘 문제가 아니라 뭉개진 소리를 복원 못 하는 것이다.</div></div>'+
+   SOUNDS.map(function(s,i){
+    return '<div class="card"><div style="font-weight:800;color:#fff">'+esc(s[0])+'</div>'+
+      '<div class="guide">'+esc(s[1])+'</div>'+
+      '<div class="en" style="font-size:17px;margin-top:8px">'+esc(s[2])+'</div><div class="yeon">'+esc(s[3])+'</div>'+
+      '<div class="row"><button class="btn" data-s="'+i+'">▶ 듣기</button><button class="btn" data-w="'+i+'">🐢 천천히</button></div></div>';
+   }).join("");
+  Array.prototype.forEach.call(el("main").querySelectorAll("[data-s]"),function(b){b.onclick=function(){speak(SOUNDS[+b.getAttribute("data-s")][2]);};});
+  Array.prototype.forEach.call(el("main").querySelectorAll("[data-w]"),function(b){b.onclick=function(){speakSlow(SOUNDS[+b.getAttribute("data-w")][2]);};});
+}
+
+/* ================= 📖 사용법 탭 ================= */
+function renderHelp(){
+  var ds=Object.keys(LOG.days).sort(), open=ds.length;
+  var allCards=ds.reduce(function(a,d){return a+LOG.days[d].cards.length;},0);
+  var allOk=ds.reduce(function(a,d){return a+LOG.days[d].cards.filter(function(c){return c.out;}).length;},0);
+  var secs=[];ds.forEach(function(d){LOG.days[d].cards.forEach(function(c){secs.push(c.sec);});});
+  var avg=secs.length?Math.round(secs.reduce(function(a,b){return a+b;},0)/secs.length*10)/10:0;
+
+  el("main").innerHTML=
+    '<div class="card"><div class="lbl">하루 15분, 이 순서</div>'+
+      '<p>1. 상대 말을 <b>먼저 소리로</b> 듣는다<br>2. 정답 보기 전에 <b>소리 내서</b> 말한다 — 안 나와도 3초 버티기<br>3. 막히면 🦴 뼈대 힌트 — 틀만 잡고 다시 시도<br>4. 정답 확인 → <b>나왔다 / 안 나왔다</b> 솔직하게<br>5. 안 나온 건 오늘 안에 한 번 더 나온다</p>'+
+      '<div class="hint">외우는 게 목적이 아니다. <b>같은 생각을 더 빨리 하는 것</b>이 목적이다.</div></div>'+
+    '<div class="card"><div class="lbl">내 기록 (자동 저장 · 아무것도 안 눌러도 됨)</div>'+
+      '<div class="stat"><div><b>'+open+'</b><span>연 날</span></div><div><b>'+allOk+"/"+allCards+'</b><span>나왔다</span></div><div><b>'+avg+'초</b><span>평균</span></div></div>'+
+      '<table><tr><th>날짜</th><th>Day</th><th>나왔다</th><th>평균초</th></tr>'+
+      ds.slice(-14).reverse().map(function(d){
+        var r=LOG.days[d],n=r.cards.length,o=r.cards.filter(function(c){return c.out;}).length;
+        var a=n?Math.round(r.cards.reduce(function(x,y){return x+y.sec;},0)/n*10)/10:0;
+        return "<tr><td>"+d.slice(5)+"</td><td>"+(r.day||"-")+"</td><td>"+o+"/"+n+"</td><td>"+a+"</td></tr>";
+      }).join("")+'</table>'+
+      (open?'':'<div class="guide">아직 기록이 없다. 훈련 탭에서 한 장이라도 하면 여기 쌓인다.</div>')+
+      '<button class="btn" id="btnCopy">📋 코치에게 보여줄 기록 복사</button>'+
+      '<div class="guide">필수 아님. 안 눌러도 기록은 폰에 계속 쌓인다.</div></div>'+
+    '<div class="card"><div class="lbl">버전</div><p>'+VERSION+' · 시작 '+EPOCH+' · 출국 '+DEP+'<br><span class="muted">출국일이 되면 훈련 탭이 자동으로 밤 복기로 바뀐다.</span></p></div>';
+
+  el("btnCopy").onclick=function(){
+    var txt="[영어 드릴 "+VERSION+"] "+today()+"\n"+ds.slice(-14).map(function(d){
+      var r=LOG.days[d];
+      return d+" Day"+(r.day||"-")+" "+r.cards.filter(function(c){return c.out;}).length+"/"+r.cards.length+
+        " 평균"+(r.cards.length?Math.round(r.cards.reduce(function(x,y){return x+y.sec;},0)/r.cards.length*10)/10:0)+"초"+
+        (r.cards.filter(function(c){return !c.out;}).length?" | 안나옴: "+r.cards.filter(function(c){return !c.out;}).map(function(c){return c.id;}).join(","):"");
+    }).join("\n");
+    var dk=Object.keys(LOG.debrief||{});
+    if(dk.length) txt+="\n[밤 복기]\n"+dk.slice(-14).map(function(d){var x=LOG.debrief[d];return d+" 못한말:"+(x.stuck||"-")+" / 못알아들음:"+(x.missed||"-");}).join("\n");
+    try{navigator.clipboard.writeText(txt);el("btnCopy").textContent="복사됨 ✓";}
+    catch(e){var ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");el("btnCopy").textContent="복사됨 ✓";}catch(e2){}document.body.removeChild(ta);}
+  };
+}
+
+/* ---------- 라우터 ---------- */
+function render(){
+  renderHeader(); renderNav();
+  if(TAB==="train") renderTrain();
+  else if(TAB==="subj") renderSubj();
+  else if(TAB==="sent") renderSent();
+  else if(TAB==="sound") renderSound();
+  else renderHelp();
   window.scrollTo(0,0);
 }
-function sdStep(){
-  if(sdIdx>=sdList.length){
-    $("subjDrill").innerHTML='<div class="card fin"><div class="big">🧠</div>'+
-      '<h2>'+sdScore+' / '+sdList.length+' 한 번에 맞힘</h2>'+
-      '<p>주어를 고르는 속도가 곧 말이 나오는 속도입니다.</p>'+
-      '<button class="btn purple" onclick="startSubjDrill()">🔁 새 문제 10개</button></div>';return;}
-  var c=sdList[sdIdx],o="";
-  for(var i=0;i<c.subjOpts.length;i++)
-    o+='<button class="opt" id="sd'+i+'" onclick="sdPick('+i+')">'+esc(c.subjOpts[i])+'</button>';
-  $("subjDrill").innerHTML='<div class="card">'+
-    '<div class="drillhead"><span class="t">🧠 주어 고르기</span><span class="n">'+(sdIdx+1)+' / '+sdList.length+'</span></div>'+
-    '<div class="subjq">'+esc(c.ko)+'</div>'+
-    '<div class="subjask">맨 앞(주어)에 뭘 세울까요?</div>'+o+'</div>';
-  sdList[sdIdx].__miss=0;
-}
-function sdPick(i){
-  var c=sdList[sdIdx];
-  if(i!==c.subjAns){c.__miss=1;var b=$("sd"+i);if(b)b.className="opt wrong";return;}
-  if(!c.__miss)sdScore++;
-  $("sd"+i).className="opt right";
-  var card=$("subjDrill").querySelector(".card");
-  var w=document.createElement("div");w.className="why";w.innerHTML="✅ "+c.subjWhy+
-    '<div style="margin-top:9px;font-size:16px;font-weight:800;color:#2F7D5D">'+esc(c.en)+'</div>'+
-    '<div style="font-size:13px;color:#B07908;font-weight:700;margin-top:2px">🔊 '+esc(c.sound)+'</div>';
-  card.appendChild(w);
-  var btn=document.createElement("button");btn.className="btn purple";btn.style.marginTop="12px";
-  btn.textContent="다음 →";btn.onclick=function(){sdIdx++;sdStep();};
-  card.appendChild(btn);
-  speak(c.en,0.95,null);
-}
-
-function renderEnd(){
-  $("qpos").textContent="";$("qkind").textContent="";$("prog").style.width="100%";
-  var all=queue.concat(retry),seen={},lines=[],nSaid=0;
-  for(var i=0;i<all.length;i++){var it=all[i],c=it.card;
-    if(seen[c.id])continue;seen[c.id]=1;
-    var said=(it.said||"").trim();if(said)nSaid++;
-    lines.push((hardList.indexOf(c)>=0?"[어려움] ":"[통과] ")+c.ko+" / 정답: "+c.en+" / 내가 말한 것: "+(said||"(안 적음)"));}
-  var dt=new Date(),ds=dt.getFullYear()+"-"+("0"+(dt.getMonth()+1)).slice(-2)+"-"+("0"+dt.getDate()).slice(-2);
-  var txt="[영어 드릴 앱 결과] "+ds+" · Day "+(D+1)+(_dd>0?" · D-"+_dd:"")+"\n"+lines.join("\n")+
-    "\n\n채점하고, 받아쓰기가 이상하게 찍힌 건 발음 원인 음소를 짚어줘. 어려웠던 건 다음에 더 자주 내줘.";
-  $("cardArea").innerHTML='<div class="card fin"><div class="big">🔥</div><h2>오늘 훈련 완료!</h2>'+
-    '<p>'+queue.length+'문장 훈련 (한 번 더: '+retry.length+') · Day '+(D+1)+(_dd>0?' · <b>D-'+_dd+'</b>':'')+'<br>어려웠던 문장 '+hardList.length+'개 · 받아쓰기 기록 '+nSaid+'개</p>'+
-    '<p style="color:#d9a441;font-weight:700;margin-top:10px">📋 아래를 복사해 Claude \'영어\' 프로젝트에 붙여넣어야<br>채점·발음 진단이 됩니다.</p>'+
-    '<textarea id="hardTxt" readonly>'+esc(txt)+'</textarea>'+
-    '<button class="btn primary" onclick="copyHard(this)">📋 오늘 결과 복사하기</button>'+
-    '<button class="btn ghost" style="margin-top:8px" onclick="startSpeed()">⚡ 속도 훈련 (3초 안에 나오나?)</button></div>';
-}
-function copyHard(btn){var ta=$("hardTxt");if(!ta)return;ta.select();try{ta.setSelectionRange(0,99999);}catch(e){}
-  var ok=false;try{ok=document.execCommand("copy");}catch(e){}
-  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(ta.value).then(
-    function(){btn.textContent="✅ 복사됨";},function(){btn.textContent=ok?"✅ 복사됨":"길게 눌러 직접 복사해주세요";});}
-  else btn.textContent=ok?"✅ 복사됨":"길게 눌러 직접 복사해주세요";}
-
-if(!queue.length){
-  $("cardArea").innerHTML='<div class="card empty">9일치를 다 돌았습니다. 이제 <b>실전</b>입니다.<br><b>속도 훈련</b>이나 <b>주어 찾기 드릴</b>로 감각을 유지하세요 👇<br><br>'+
-    '<button class="btn primary" onclick="startSpeed()">⚡ 속도 훈련</button>'+
-    '<button class="btn ghost" onclick="showTab(\'subj\')">🧠 주어 찾기</button></div>';
-}else renderCard();
-
-(function(){var html="";
-  for(var d=0;d<LABELS.length;d++){
-    var cs=DECK.filter(function(c){return c.d===d;});if(!cs.length)continue;
-    html+='<div class="grp"><h3>Day '+(d+1)+' · '+LABELS[d]+'</h3>';
-    for(var i=0;i<cs.length;i++){var c=cs[i];
-      html+='<div class="row" onclick="speak(\''+q(c.en)+'\',0.95,null)">'+
-        '<div class="rko">'+(c.think?"🧠 ":"")+esc(c.ko)+'</div><div class="ren">'+esc(c.en)+'</div>'+
-        '<div class="rsd">'+esc(c.sound)+'</div></div>';}
-    html+='</div>';}
-  $("bankList").innerHTML=html;})();
-
-function soundTest(btn){
-  var m=$("sndMsg");
-  if(typeof speechSynthesis==="undefined"){
-    m.innerHTML="❌ 이 환경은 음성 재생을 지원하지 않습니다.<br>파일 앱 미리보기 대신 <b>Safari</b>로 열어보세요. (파일 앱 → 공유 → Safari)";return;}
-  loadVoices();
-  speakSlow("Can I get a burger",btn);
-  m.innerHTML=voices.length
-    ? "✅ 재생을 시도했습니다. 소리가 안 들리면 ① 무음 모드(측면 스위치) 해제 ② 볼륨 확인 ③ 그래도 안 되면 <b>Safari</b>로 열어보세요."
-    : "⚠️ 음성 목록이 비어 있습니다. 잠시 후 다시 누르거나, <b>Safari</b>로 열어보세요.";
-}
-
-function showTab(t){
-  var ids=["train","subj","bank","sound","guide"];
-  for(var i=0;i<ids.length;i++){var x=ids[i];
-    $(x).className=(x===t)?"":"hidden";
-    $("tab"+x.charAt(0).toUpperCase()+x.slice(1)).className=(x===t)?"tab on":"tab";}
-  if(t==="subj"&&!$("subjDrill").innerHTML.trim())startSubjDrill();
-  window.scrollTo(0,0);
-}
-
-/* 앱을 열자마자 주어 드릴 첫 문제를 미리 만들어 둔다 — 탭을 누르면 즉시 풀 수 있게 */
-startSubjDrill();
-window.scrollTo(0,0);
+todayRec(); saveLog(LOG);   // 앱을 연 것 자체를 기록 (실행률)
+render();
 </script>
 </body>
 </html>
