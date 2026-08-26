@@ -232,7 +232,7 @@ function renderTrain(){
   el("main").innerHTML =
     '<div class="meta"><span>'+(idx+1)+' / '+queue.length+'</span><span>'+(item.rev?"복습 · ":"")+esc(c.t)+'</span></div>'+
     '<div class="card">'+tag+prompt+
-      (c.type==="react"?'<div class="row"><button class="btn" id="bSpeak">▶ 상대 말 듣기</button><button class="btn" id="bSlow">🐢 단어별 천천히</button></div>':'')+
+      (c.type==="react"?'<div class="row"><button class="btn" id="bSpeak">▶ 상대 말 듣기</button><button class="btn" id="bSlow">🐢 천천히 끊어서</button></div>':'')+
       '<div class="guide">🎤 소리 내서 영어로 말해보세요. <b>안 나와도 3초는 버티기.</b><br>키보드 지구본 꾹 → English → 마이크로 말한 그대로 아래에 넣기.</div>'+
       '<textarea id="sayBox" rows="2" placeholder="🎤 여기에 받아쓰기로 말하기 (건너뛰어도 됩니다)"></textarea>'+
       '<button class="btn primary" id="btnReveal">정답 확인</button>'+
