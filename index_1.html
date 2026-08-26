@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>영어 드릴 — 다떠영식 훈련</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#0e1116;color:#e8ecf1;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Segoe UI",sans-serif;line-height:1.6;padding-bottom:40px}
+header{position:sticky;top:0;z-index:10;background:#0e1116;padding:12px 14px 0;border-bottom:1px solid #1e2530}
+.hrow{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+h1{font-size:19px;margin:0;font-weight:800}
+.dayb{font-size:13px;color:#8b97a8;font-weight:700;white-space:nowrap}
+.ver{font-size:10px;color:#3d4757;margin-left:6px;font-weight:500}
+nav{display:flex;gap:4px;overflow-x:auto;padding:10px 0 0;-webkit-overflow-scrolling:touch}
+nav button{flex:0 0 auto;background:#161c25;color:#8b97a8;border:0;border-radius:8px 8px 0 0;padding:9px 13px;font-size:13px;font-weight:700;font-family:inherit}
+nav button.on{background:#1e2a3a;color:#fff}
+main{padding:14px}
+.meta{display:flex;justify-content:space-between;font-size:12px;color:#7c889a;margin-bottom:10px;font-weight:600}
+.card{background:#161c25;border:1px solid #232c39;border-radius:14px;padding:16px;margin-bottom:12px}
+.tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;margin-bottom:10px}
+.t-new{background:#1b3a2a;color:#5ce39a}.t-rev{background:#3a3320;color:#e8c05c}.t-brain{background:#2c2340;color:#c49cf5}
+.lbl{font-size:11px;color:#6b7889;font-weight:800;letter-spacing:.4px;margin-bottom:5px}
+.trig{font-size:17px;font-weight:700;color:#fff;background:#0f151d;border-left:3px solid #3d7fd6;padding:11px 12px;border-radius:0 8px 8px 0;margin-bottom:12px}
+.ko{font-size:17px;font-weight:700;color:#fff;margin-bottom:12px}
+.btn{display:block;width:100%;padding:14px;border:0;border-radius:11px;font-size:15px;font-weight:800;font-family:inherit;margin-top:9px;background:#232c39;color:#cfd8e3}
+.btn.primary{background:#2f6fd0;color:#fff}
+.btn.ok{background:#1d7a4d;color:#fff}.btn.no{background:#7a2f3a;color:#fff}
+.row{display:flex;gap:8px}.row .btn{margin-top:9px}
+.hint{font-size:13px;color:#8b97a8;margin:10px 0 0;padding:10px;background:#0f151d;border-radius:9px}
+textarea{width:100%;background:#0f151d;border:1px solid #2b3542;border-radius:10px;color:#e8ecf1;padding:11px;font-size:15px;font-family:inherit;margin-top:9px;resize:none}
+.ans{background:#0f151d;border:1px solid #2b4a6e;border-radius:11px;padding:13px;margin-top:11px}
+.en{font-size:20px;font-weight:800;color:#7fc4ff;margin-bottom:5px}
+.yeon{font-size:14px;color:#ffd479;font-weight:700;margin-bottom:8px}
+.trap{font-size:13px;color:#ff9d9d;background:#2a1618;border-radius:8px;padding:9px;margin-top:8px}
+.fu{font-size:14px;color:#c8d2df;background:#141b24;border-radius:8px;padding:10px;margin-top:9px}
+.guide{font-size:13px;color:#8b97a8;margin-top:10px}
+h2{font-size:16px;margin:20px 0 8px;color:#fff}
+h3{font-size:14px;margin:16px 0 6px;color:#9fb3cc}
+p,li{font-size:14px;color:#c2cbd7}
+ul{padding-left:20px;margin:6px 0}
+.pill{display:inline-block;background:#1a222d;border:1px solid #2b3542;border-radius:8px;padding:6px 10px;margin:3px 3px 0 0;font-size:13px;font-weight:700;color:#dbe4ee}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+td,th{border-bottom:1px solid #232c39;padding:7px 4px;text-align:left;vertical-align:top}
+th{color:#7c889a;font-size:11px;font-weight:800}
+.big{font-size:26px;font-weight:800;color:#fff}
+.stat{display:flex;gap:8px;margin:10px 0}
+.stat div{flex:1;background:#0f151d;border-radius:10px;padding:11px;text-align:center}
+.stat b{display:block;font-size:20px;color:#7fc4ff}
+.stat span{font-size:11px;color:#7c889a;font-weight:700}
+.muted{color:#6b7889;font-size:12px}
+.sp{height:8px}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <h1>🇺🇸 영어 드릴<span class="ver" id="verStamp"></span></h1>
+    <div class="dayb" id="dayBadge"></div>
+  </div>
+  <nav id="nav"></nav>
+</header>
+<main id="main"></main>
+
+<script>
+/* ============================================================
+   영어 드릴 v7  ·  2026-08-26
+   v6 대비 변경 3가지 (그 외 동작은 v6와 동일하게 유지)
+     1) 밤 복기 모드 — 출국일(DEP)부터 자동 전환
+     2) 기록(localStorage) — 새 버튼 없이 기존 탭에 측정을 얹음
+     3) 채점 버튼 문구 — 어려웠어/쉬웠어 → 나왔다/안 나왔다
+   ============================================================ */
+var VERSION = "v7 · 2026-08-26";
+var EPOCH = "2026-08-20";   // Day 1
+var DEP   = "2026-08-29";   // 출국일 = 밤 복기 모드 시작
+var LOGKEY = "drill_log_v7";
+var REVIEW = [2,5,9];
+var CAP = 12;
+
+/* ---------- 날짜 ---------- */
+function ymd(d){var m=("0"+(d.getMonth()+1)).slice(-2),a=("0"+d.getDate()).slice(-2);return d.getFullYear()+"-"+m+"-"+a;}
+function today(){return ymd(new Date());}
+function diffDays(a,b){return Math.round((new Date(b+"T00:00:00")-new Date(a+"T00:00:00"))/86400000);}
+function dayNum(){return diffDays(EPOCH,today())+1;}
+function dDay(){return diffDays(today(),DEP);}
+function isDebrief(){return diffDays(today(),DEP)<=0;}
+
+/* ---------- 기록 (측정) ----------
+   원칙: 새 동작을 만들지 않는다. 이미 누르는 탭에 측정을 얹는다.
+     · 카드 표시 → '정답 확인' 누름  = 몇 초 버텼나 (생성 시간)
+     · 받아쓰기 칸에 글자가 있었나   = 실제로 입이 떨어졌나 (행동 증거)
+     · 나왔다 / 안 나왔다            = 자기보고 (기존 채점 탭 그대로)
+     · 앱 열림 / 마지막 카드 번호    = 실행률·완주율
+------------------------------------ */
+function loadLog(){try{return JSON.parse(localStorage.getItem(LOGKEY))||{days:{},debrief:{}};}catch(e){return{days:{},debrief:{}};}}
+function saveLog(L){try{localStorage.setItem(LOGKEY,JSON.stringify(L));}catch(e){}}
+var LOG = loadLog();
+function todayRec(){
+  var t=today();
+  if(!LOG.days[t]) LOG.days[t]={opened:new Date().toTimeString().slice(0,5),day:dayNum(),cards:[],total:0};
+  return LOG.days[t];
+}
+function logCard(rec){ var r=todayRec(); r.cards.push(rec); saveLog(LOG); }
+function logTotal(n){ var r=todayRec(); r.total=n; saveLog(LOG); }
+function logDebrief(field,val){
+  var t=today();
+  if(!LOG.debrief[t]) LOG.debrief[t]={};
+  LOG.debrief[t][field]=val; saveLog(LOG);
+}
+
+/* ---------- 소리 ----------
+   iOS Safari는 SpeechSynthesisUtterance.rate 를 무시한다.
+   그래서 '천천히'는 rate가 아니라 단어를 쪼개 사이 공백(260ms)으로 구현한다. */
+function speak(t){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang="en-US";speechSynthesis.speak(u);}catch(e){}}
+function speakSlow(t){try{speechSynthesis.cancel();var w=String(t).split(/\s+/),i=0;
+  (function nx(){if(i>=w.length)return;var u=new SpeechSynthesisUtterance(w[i]);u.lang="en-US";
+   u.onend=function(){i++;setTimeout(nx,260);};speechSynthesis.speak(u);})();}catch(e){}}
+
+/* ---------- 커리큘럼 36장 ----------
+   출제 온톨로지 준수: Trigger(자극)를 채운다. 반응형 70% / 발동형 25% / 🧠 주어찾기 5%
+   type: react(상대 발화) | init(상태+기회+목표) | subj(🧠 주어 찾기) */
+var CARDS = [
+/* Day 1 — 못 알아들었을 때 (3단 사다리) */
+{d:1,t:"🔥 못 알아들었을 때",type:"react",trig:'점원이 뭐라고 빠르게 말했는데 하나도 못 알아들었다.',en:"Sorry?",yeon:"쏘리?",bone:"한 단어면 된다. 문장 만들지 마라.",fu:'점원이 다시 말했는데 여전히 빠르다 → "Could you say that again?"',trap:""},
+{d:1,t:"🔥 못 알아들었을 때",type:"react",trig:'두 번 들었는데도 속도가 그대로다.',en:"Can you speak slower, please?",yeon:"캔유 스픽 슬로워 플리즈",bone:"Can you ~ , please?",fu:'점원: "Sure. Is this better?"',trap:""},
+{d:1,t:"🔥 못 알아들었을 때",type:"react",trig:'점원: "It\'s complimentary." — 한 단어를 모르겠다.',en:"What does that mean?",yeon:"왓 더즈 댓 민",bone:"What does ~ mean?",fu:'점원: "It means it\'s free."',trap:""},
+{d:1,t:"🔥 못 알아들었을 때",type:"init",trig:"상대가 이름과 번호를 불러주는데 받아적질 못하겠다. 종이와 펜이 카운터에 있다.",en:"Could you write it down?",yeon:"쿠쥬 라이릿 다운",bone:"Could you ~ ?",fu:"이 3단 사다리가 해외 2주의 생명줄이다: Sorry? → slower → write it down",trap:"write it down = 라이트 잇 다운❌ 라이릿 다운⭕ (유음+연음)"},
+/* Day 2 — 공항·입국심사 */
+{d:2,t:"✈️ 공항·입국심사",type:"react",trig:'심사관: "What\'s the purpose of your visit?"',en:"Vacation.",yeon:"베이케이션",bone:"완전한 문장 금지. 한 단어.",fu:'심사관: "Business or pleasure?" → "Pleasure."',trap:'"I came here for vacation"은 통하지만 번역투 신호탄이다.'},
+{d:2,t:"✈️ 공항·입국심사",type:"react",trig:'심사관: "How long are you staying?"',en:"Two weeks.",yeon:"투 윅스",bone:"숫자 + 단위. 끝.",fu:'심사관: "And then?" → "Back to Korea."',trap:"weeks 끝소리를 흘리지 말 것."},
+{d:2,t:"✈️ 공항·입국심사",type:"react",trig:'심사관: "Where are you staying?"',en:"At a hotel.",yeon:"애러 호텔",bone:"At a ~",fu:'심사관: "Do you have the address?" → "Yes, right here."',trap:"At a = 앳 어❌ 애러⭕ (유음+연음)"},
+{d:2,t:"✈️ 공항·입국심사",type:"subj",trig:"표에 8시 출발이라고 적혀 있어.",en:"The ticket says 8 p.m.",yeon:"더 티킷 쎄즈 에잇 피엠",bone:"'적혀 있어' → say. 내가 아니라 표가 주어.",fu:"같은 틀: The sign says / The map says / The menu says",trap:'says = 쎄이즈❌ 쎄즈⭕ (철자에 속지 마라). 끝 Z는 목이 울려야 한다.'},
+/* Day 3 — 택시·이동 */
+{d:3,t:"🚕 택시·이동",type:"react",trig:'기사: "Where to?"',en:"This address, please.",yeon:"디스 어드레스 플리즈",bone:"주소를 보여주며 두 단어 + please.",fu:'기사: "Got it."',trap:"문장 만들지 말고 화면을 보여줘라."},
+{d:3,t:"🚕 택시·이동",type:"init",trig:"미터기가 안 보인다. 아직 안 탔다. 공항까지 얼마인지 먼저 알아야 한다.",en:"How much is it to the airport?",yeon:"하우 머치 이짓 투 디 에어포트",bone:"How much is it to ~ ?",fu:'기사: "About thirty." → "Okay, let\'s go."',trap:"is it = 이즈 잇❌ 이짓⭕"},
+{d:3,t:"🚕 택시·이동",type:"init",trig:"목적지 바로 앞이다. 차가 신호에 섰다. 여기서 내리고 싶다.",en:"You can drop me off here.",yeon:"유 캔 드랍 미 오프 히어",bone:"You can ~ here.",fu:'기사: "Right here?" → "Yes, thank you."',trap:""},
+{d:3,t:"🚕 택시·이동",type:"subj",trig:"이 기차 타면 시내 갈 수 있어.",en:"This train goes downtown.",yeon:"디스 트레인 고우즈 다운타운",bone:"'~하면 갈 수 있어' → 기차가 주어. goes/takes.",fu:"같은 틀: This bus takes you downtown.",trap:"goes 끝 Z — 고우스❌ 고우즈⭕"},
+/* Day 4 — 호텔 */
+{d:4,t:"🏨 호텔",type:"react",trig:'프런트 직원: "Checking in?"',en:"Yes, checking in.",yeon:"예스, 체키닌",bone:"여권 내밀고 두 단어.",fu:'직원: "Name, please?" → "Justin."',trap:'"I want to check in"은 번역투 신호탄. 짧을수록 원어민이다.'},
+{d:4,t:"🏨 호텔",type:"react",trig:'직원: "Your room isn\'t ready until three."',en:"Can I leave my bags here?",yeon:"캐나이 리브 마이 백즈 히어",bone:"Can I ~ here?",fu:'직원: "Of course. Here\'s your tag."',trap:'bags = 백스❌ 백즈⭕ (끝 Z + g 둘 다 목이 울려야 한다)'},
+{d:4,t:"🏨 호텔",type:"react",trig:'직원: "Is everything okay with the room?"',en:"There's a problem with the shower.",yeon:"데어저 프라블럼 위더 샤워",bone:"There's a problem with ~ (뒤에 명사만 갈아끼운다)",fu:'직원: "I\'ll send someone up."',trap:"There's a = 데어즈 어❌ 데어저⭕ (3단 연음)"},
+{d:4,t:"🏨 호텔",type:"subj",trig:"에어컨이 안 돼.",en:"The AC isn't working.",yeon:"디 에이씨 이즌 워킹",bone:"고장은 '내가'가 아니라 물건이 주어.",fu:"같은 틀: The shower / The WiFi / The key isn't working.",trap:""},
+/* Day 5 — 식당 */
+{d:5,t:"🍽 식당",type:"react",trig:'직원: "How many?"',en:"Table for two.",yeon:"테이블 포 투",bone:"세 단어. 문장 아님.",fu:'직원: "Follow me."',trap:""},
+{d:5,t:"🍽 식당",type:"react",trig:'서버: "Are you ready to order?"',en:"I'll have this one.",yeon:"아일 해브 디스 원",bone:"주문은 I'll have ~ . 가리키면서.",fu:'서버: "Anything to drink?" → "Just water, please."',trap:'"I want this"❌ — ASR은 통과시키지만 원어민에겐 어린애 말투.'},
+{d:5,t:"🍽 식당",type:"init",trig:"메뉴가 전부 낯설다. 서버가 옆에 서서 기다린다. 뭐가 잘 나가는지 알고 싶다.",en:"What's popular here?",yeon:"왓츠 파퓰러 히어",bone:"What's ~ here?",fu:'서버: "The steak is our best." → "I\'ll have that."',trap:""},
+{d:5,t:"🍽 식당",type:"subj",trig:"메뉴에 뭐라고 적혀 있어?",en:"What does the menu say?",yeon:"왓 더즈 더 메뉴 쎄이",bone:"'적혀 있어' → say. 메뉴가 주어.",fu:"답도 같은 틀: The menu says it's spicy.",trap:""},
+/* Day 6 — 돈·쇼핑 */
+{d:6,t:"🛍 돈·쇼핑",type:"react",trig:'점원: "Can I help you find something?"',en:"Just looking, thanks.",yeon:"저스 루킹, 땡스",bone:"점원을 막는 한마디. 세 단어.",fu:'점원: "Let me know if you need anything."',trap:""},
+{d:6,t:"🛍 돈·쇼핑",type:"init",trig:"마음에 드는 옷을 들고 있다. 점원이 눈을 마주쳤다. 입어보고 싶다.",en:"Can I try this on?",yeon:"캐나이 트라이 디손",bone:"Can I ~ ?",fu:'점원: "Fitting room is right there."',trap:"this on = 디스 온❌ 디손⭕ (또박또박 떼면 오히려 안 잡힌다)"},
+{d:6,t:"🛍 돈·쇼핑",type:"react",trig:'점원: "Cash or card?"',en:"Card, please.",yeon:"카드 플리즈",bone:"두 단어. 카드 내밀면서.",fu:'점원: "Tap here."',trap:'card = 카+드 2음절❌ → "카알드" 한 덩어리⭕'},
+{d:6,t:"🛍 돈·쇼핑",type:"react",trig:'안내데스크 직원: "Can I help you?" — 환전소를 못 찾겠다.',en:"Where can I exchange money?",yeon:"웨어 캐나이 익스체인지 머니",bone:"Where can I ~ ?",fu:'직원: "Second floor, next to the pharmacy."',trap:""},
+/* Day 7 — 문제·도움 */
+{d:7,t:"🆘 문제·도움",type:"init",trig:"계산서 금액이 이상하다. 서버가 옆을 지나간다. 지금 잡아야 한다.",en:"There's a problem with the bill.",yeon:"데어저 프라블럼 위더 빌",bone:"There's a problem with ~",fu:'서버: "Let me check that for you."',trap:"There's a = 데어저⭕ / there'**s** 끝 Z도 울려야 한다"},
+{d:7,t:"🆘 문제·도움",type:"react",trig:'경찰: "What happened?"',en:"I lost my bag.",yeon:"아이 로스 마이 백",bone:"주어+동사부터. 짧게.",fu:'경찰: "Where did you last see it?" → "In the taxi."',trap:'bag 끝 g가 죽으면 "back"으로 찍힌다. 끝에서 목이 한 번 울려야 한다.'},
+{d:7,t:"🆘 문제·도움",type:"init",trig:"폰이 꺼졌고 길을 모른다. 지나가는 사람이 눈을 마주쳤다.",en:"Can you help me?",yeon:"캔유 헬프 미",bone:"Can you ~ ?",fu:'행인: "Sure, what do you need?" → "I\'m looking for this address."',trap:""},
+{d:7,t:"🆘 문제·도움",type:"subj",trig:"차가 막혀서 늦었어.",en:"The traffic made me late.",yeon:"더 트래픽 메이미 레잇",bone:"'때문에' → make. '나'를 지우고 일으킨 것을 앞에 세운다.",fu:"같은 틀: The rain made me late. / The line made me wait.",trap:'made me = 메이드 미❌ 메이미⭕ (d 탈락). 발음하려 버티면 오히려 틀린다.'},
+/* Day 8 — 스몰토크 */
+{d:8,t:"💬 스몰토크",type:"react",trig:'옆자리 사람: "Where are you from?"',en:"I'm from Korea.",yeon:"아임 프롬 코리아",bone:"I'm from ~",fu:'상대: "First time here?" → "Yes, first time."',trap:""},
+{d:8,t:"💬 스몰토크",type:"react",trig:'상대: "How do you like it here?"',en:"I love it here.",yeon:"아이 러빗 히어",bone:"I love it ~",fu:'상대: "What have you seen so far?"',trap:"love it = 러브 잇❌ 러빗⭕"},
+{d:8,t:"💬 스몰토크",type:"react",trig:'헤어질 때 상대: "It was nice talking to you."',en:"Nice meeting you.",yeon:"나이스 미링유",bone:"두 단어 + you.",fu:"상대가 손을 내민다.",trap:"meeting you = 미팅 유❌ 미링유⭕ (유음)"},
+{d:8,t:"💬 스몰토크",type:"subj",trig:"여기 어떤 일로 왔어? (내가 먼저 묻는다)",en:"What brought you here?",yeon:"왓 브로츄 히어",bone:"'왜 왔어?' → What brought. 무엇이 너를 데려왔나.",fu:"상대가 답하면 → \"Oh, nice. How long?\"",trap:"brought you = 브로트 유❌ 브로츄⭕"},
+/* Day 9 — 🧠 총점검 */
+{d:9,t:"🧠 총점검",type:"subj",trig:"커피 마셨더니 잠이 깼어.",en:"The coffee woke me up.",yeon:"더 커피 워크 미 업",bone:"커피가 주어. 나를 깨웠다.",fu:"❌ The coffee made me awake — 원어민은 이렇게 안 쓴다.",trap:""},
+{d:9,t:"🧠 총점검",type:"subj",trig:"그 소식 때문에 진짜 놀랐어.",en:"The news really surprised me.",yeon:"더 뉴즈 리얼리 써프라이즈드 미",bone:"'때문에' → 소식이 주어.",fu:"❌ The news made me so surprised — 원어민은 이렇게 안 쓴다.",trap:"news 끝 Z — 뉴스❌ 뉴즈⭕"},
+{d:9,t:"🧠 총점검",type:"subj",trig:"와이파이가 자꾸 끊겨.",en:"The WiFi keeps cutting out.",yeon:"더 와이파이 킵스 커링 아웃",bone:"'자꾸 ~해' → keeps -ing",fu:"같은 틀: The line keeps moving. / It keeps raining.",trap:"cutting = 커팅❌ 커링⭕ (유음)"},
+{d:9,t:"🧠 총점검",type:"subj",trig:"이 코트 덕분에 따뜻해.",en:"This coat keeps me warm.",yeon:"디스 코트 킵스 미 웜",bone:"'덕분에' → keep. 코트가 주어.",fu:"같은 틀: This bag keeps my laptop safe.",trap:""}
+];
+CARDS.forEach(function(c,i){c.id="c"+(i+1);});
+
+/* ---------- 오늘의 큐 ---------- */
+function buildQueue(){
+  var n=dayNum(), q=[];
+  CARDS.filter(function(c){return c.d===n;}).forEach(function(c){q.push({c:c,rev:false});});
+  REVIEW.forEach(function(gap){
+    var src=n-gap; if(src<1) return;
+    CARDS.filter(function(c){return c.d===src;}).forEach(function(c){q.push({c:c,rev:true});});
+  });
+  return q.slice(0,CAP);
+}
+
+/* ---------- 상태 ---------- */
+var TAB="train", queue=[], idx=0, shownAt=0, revealed=false, sessionLog=[];
+
+function el(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+
+var TABS=[["train","🔥 훈련"],["subj","🧠 주어"],["sent","📚 문장"],["sound","🔊 소리"],["help","📖 사용법"]];
+function renderNav(){
+  el("nav").innerHTML=TABS.map(function(t){return '<button data-t="'+t[0]+'" class="'+(TAB===t[0]?"on":"")+'">'+t[1]+'</button>';}).join("");
+  Array.prototype.forEach.call(el("nav").children,function(b){b.onclick=function(){TAB=b.getAttribute("data-t");render();};});
+}
+function renderHeader(){
+  el("verStamp").textContent=VERSION;
+  var dd=dDay();
+  el("dayBadge").textContent = isDebrief() ? ("해외 "+(1-dd)+"일차 · 밤 복기") : ("Day "+dayNum()+" · D-"+dd);
+}
+
+/* ================= 훈련 탭 ================= */
+function renderTrain(){
+  if(isDebrief()) return renderDebrief();
+  if(dayNum()<1){el("main").innerHTML='<div class="card">아직 시작일 전이다.</div>';return;}
+  if(!queue.length){queue=buildQueue();idx=0;sessionLog=[];logTotal(queue.length);}
+  if(!queue.length){el("main").innerHTML='<div class="card"><b>오늘 새 카드가 없다.</b><div class="guide">다른 탭에서 복습하거나, 내일 다시 열면 된다.</div></div>';return;}
+  if(idx>=queue.length) return renderDone();
+
+  var item=queue[idx], c=item.c;
+  var tag = item.rev?'<span class="tag t-rev">복습</span>':(c.type==="subj"?'<span class="tag t-brain">🧠 주어 찾기</span>':'<span class="tag t-new">신규</span>');
+  var prompt = c.type==="subj"
+      ? '<div class="lbl">한국어</div><div class="ko">'+esc(c.trig)+'</div>'
+      : '<div class="lbl">'+(c.type==="react"?"상대가 던진 말":"상황")+'</div><div class="trig">'+(c.type==="react"?"🗣 ":"")+esc(c.trig)+'</div>';
+
+  el("main").innerHTML =
+    '<div class="meta"><span>'+(idx+1)+' / '+queue.length+'</span><span>'+(item.rev?"복습 · ":"")+esc(c.t)+'</span></div>'+
+    '<div class="card">'+tag+prompt+
+      (c.type==="react"?'<div class="row"><button class="btn" id="bSpeak">▶ 상대 말 듣기</button><button class="btn" id="bSlow">🐢 단어별 천천히</button></div>':'')+
+      '<div class="guide">🎤 소리 내서 영어로 말해보세요. <b>안 나와도 3초는 버티기.</b><br>키보드 지구본 꾹 → English → 마이크로 말한 그대로 아래에 넣기.</div>'+
+      '<textarea id="sayBox" rows="2" placeholder="🎤 여기에 받아쓰기로 말하기 (건너뛰어도 됩니다)"></textarea>'+
+      '<button class="btn primary" id="btnReveal">정답 확인</button>'+
+      '<button class="btn" id="btnBone">🦴 뼈대 힌트 보기</button>'+
+      '<div id="boneBox"></div><div id="ansBox"></div>'+
+    '</div>';
+
+  shownAt=Date.now(); revealed=false;
+  if(c.type==="react"){el("bSpeak").onclick=function(){speak(stripQ(c.trig));};el("bSlow").onclick=function(){speakSlow(stripQ(c.trig));};}
+  el("btnBone").onclick=function(){el("boneBox").innerHTML='<div class="hint">🦴 '+esc(c.bone)+'</div>';};
+  el("btnReveal").onclick=reveal;
+}
+function stripQ(s){var m=s.match(/"([^"]+)"/);return m?m[1]:s;}
+
+function reveal(){
+  if(revealed) return; revealed=true;
+  var item=queue[idx], c=item.c;
+  var secs=Math.round((Date.now()-shownAt)/100)/10;
+  var typed=(el("sayBox").value||"").trim();
+  el("btnReveal").style.display="none";
+  el("ansBox").innerHTML =
+    '<div class="ans"><div class="en">'+esc(c.en)+'</div><div class="yeon">'+esc(c.yeon)+'</div>'+
+      '<div class="row"><button class="btn" id="aSpeak">▶ 듣기</button><button class="btn" id="aSlow">🐢 천천히</button></div>'+
+      (c.trap?'<div class="trap">🎯 '+esc(c.trap)+'</div>':'')+
+      (c.fu?'<div class="fu">↩️ '+esc(c.fu)+'</div>':'')+
+    '</div>'+
+    '<div class="guide" style="margin-top:12px">방금 <b>입에서 나왔나?</b></div>'+
+    '<div class="row"><button class="btn ok" id="gOk">나왔다</button><button class="btn no" id="gNo">안 나왔다</button></div>';
+  el("aSpeak").onclick=function(){speak(c.en);};
+  el("aSlow").onclick=function(){speakSlow(c.en);};
+  el("gOk").onclick=function(){grade(1,secs,typed,c,item);};
+  el("gNo").onclick=function(){grade(0,secs,typed,c,item);};
+}
+
+function grade(out,secs,typed,c,item){
+  var rec={id:c.id,day:c.d,type:c.type,rev:!!item.rev,sec:secs,typed:typed.length>0,said:typed.slice(0,120),out:out};
+  logCard(rec); sessionLog.push(rec);
+  if(!out) queue.push({c:c,rev:true});   // 안 나온 건 오늘 안에 한 번 더
+  idx++; render();
+}
+
+function renderDone(){
+  var r=todayRec(), n=sessionLog.length;
+  var ok=sessionLog.filter(function(x){return x.out;}).length;
+  var spoke=sessionLog.filter(function(x){return x.typed;}).length;
+  var avg=n?Math.round(sessionLog.reduce(function(a,b){return a+b.sec;},0)/n*10)/10:0;
+  var miss=sessionLog.filter(function(x){return !x.out;});
+  el("main").innerHTML=
+    '<div class="card"><div class="big">오늘 끝.</div>'+
+      '<div class="stat"><div><b>'+ok+'/'+n+'</b><span>나왔다</span></div>'+
+      '<div><b>'+spoke+'</b><span>입 뗀 카드</span></div>'+
+      '<div><b>'+avg+'초</b><span>평균 생성시간</span></div></div>'+
+      '<div class="guide">평균 생성시간이 줄어드는 게 목표다. 정확도가 아니라 <b>속도</b>가 실력이다.</div>'+
+      (miss.length?'<div class="hint"><b>오늘 안 나온 것</b><br>'+miss.map(function(m){var c=CARDS.filter(function(x){return x.id===m.id;})[0];return "· "+esc(c.en);}).join("<br>")+'</div>':'')+
+      '<div class="guide" style="margin-top:14px">기록은 폰에 자동 저장됐다. <b>아무것도 안 눌러도 된다.</b><br>코치에게 보여주고 싶으면 📖 사용법 탭 맨 아래에 있다.</div>'+
+    '</div>';
+}
+
+/* ================= 밤 복기 모드 (출국일부터 자동) ================= */
+var FEEL=[["awkward","어색해·뻘쭘해·민망해·분위기 싸해"],["weird","이상해·희한해·묘해·찜찜해"],["hurt","아파·서운해·상처받았어·안타까워"],["upset","화나·기분 상했어·속상해·심난해"],["bother","신경 쓰여·거슬려·마음에 걸려"],["relieved","안심돼·다행이야·마음 놓인다·후련해"],["frustrated","답답해·짜증나·속 터져"],["overwhelmed","벅차·정신없어·감당 안 돼·압도된다"],["excited","신나·들떠·설레·기대돼"]];
+function renderDebrief(){
+  var t=today(), saved=(LOG.debrief[t]||{});
+  el("main").innerHTML=
+    '<div class="card"><div class="big">밤 복기</div>'+
+      '<div class="guide">오늘 실제로 막힌 지점이 내일의 교재다. <b>완벽하게 쓰지 마라. 한 줄이면 된다.</b></div></div>'+
+    '<div class="card"><div class="lbl">① 하려다 못 한 말</div>'+
+      '<div class="guide">영어로 뭐라 할지 몰라서 삼킨 한국어 문장.</div>'+
+      '<textarea id="dStuck" rows="4" placeholder="예: 이거 포장돼요? / 저 사람 때문에 늦었어">'+esc(saved.stuck||"")+'</textarea>'+
+      '<button class="btn primary" id="sStuck">저장</button></div>'+
+    '<div class="card"><div class="lbl">② 못 알아들은 말</div>'+
+      '<div class="guide">상대가 했는데 못 알아들은 말. 소리 나는 대로 적어도 된다.</div>'+
+      '<textarea id="dMiss" rows="4" placeholder="예: 계산할 때 뭐라고 물어봤는데 &quot;포히얼오투고&quot; 같이 들렸다">'+esc(saved.missed||"")+'</textarea>'+
+      '<button class="btn primary" id="sMiss">저장</button></div>'+
+    '<div class="card"><div class="lbl">단어가 안 떠올랐다면 — 느낌으로 잡아라</div>'+
+      '<div class="guide">한국어 단어를 찾지 말고 ① 상황을 보고 ② 본질 느낌을 잡고 ③ 아는 단어 하나로 퉁쳐라.</div>'+
+      '<table><tr><th>영어</th><th>이 한국어들이 전부 이 한 단어</th></tr>'+
+      FEEL.map(function(f){return "<tr><td><b>"+f[0]+"</b></td><td>"+f[1]+"</td></tr>";}).join("")+'</table>'+
+      '<div class="hint">강도 조절: <b>a little / kind of / pretty</b> 를 앞에 붙인다. "좀 서운해" = kind of hurt</div></div>';
+  el("sStuck").onclick=function(){logDebrief("stuck",el("dStuck").value);el("sStuck").textContent="저장됨 ✓";};
+  el("sMiss").onclick=function(){logDebrief("missed",el("dMiss").value);el("sMiss").textContent="저장됨 ✓";};
+}
+
+/* ================= 🧠 주어 탭 ================= */
+function renderSubj(){
+  el("main").innerHTML=
+    '<div class="card"><div class="big">주어 찾기 4단계</div>'+
+      '<p>1. "내가 / 네가"를 지운다<br>2. 이 일을 <b>일으킨 것</b>을 찾는다<br>3. 맨 앞에 세운다<br>4. 동사는 아래 6개 중 하나</p>'+
+      '<div>'+["make (그 순간)","keep (계속)","tell (알려줌)","say (적혀 있음)","take/bring (데려감)","give (줌)"].map(function(v){return '<span class="pill">'+v+'</span>';}).join("")+'</div></div>'+
+    '<div class="card"><div class="lbl">한국어 신호탄 — 이 말이 나오면 바로 뒤집어라</div>'+
+      '<table>'+
+      [["때문에 / 덕분에","make · keep"],["~하면 ~할 수 있어","take"],["적혀 있어","say"],["보니까 ~같아","tell me"],["자꾸 ~해","keep -ing"],["왜 ~했어?","What brought"]]
+      .map(function(r){return "<tr><td>"+r[0]+"</td><td><b>"+r[1]+"</b></td></tr>";}).join("")+'</table></div>'+
+    '<div class="card"><div class="lbl">직접 뒤집어 보기</div>'+
+      CARDS.filter(function(c){return c.type==="subj";}).map(function(c){
+        return '<div style="border-bottom:1px solid #232c39;padding:9px 0"><div style="font-weight:700">'+esc(c.trig)+'</div>'+
+               '<div class="muted" style="margin-top:3px">탭해서 확인 ▾</div>'+
+               '<div style="display:none"><div class="en" style="font-size:17px">'+esc(c.en)+'</div><div class="yeon">'+esc(c.yeon)+'</div></div></div>';
+      }).join("")+'</div>';
+  Array.prototype.forEach.call(el("main").querySelectorAll('div[style*="border-bottom"]'),function(d){
+    d.onclick=function(){var h=d.lastChild;h.style.display=h.style.display==="none"?"block":"none";};
+  });
+}
+
+/* ================= 📚 문장 탭 ================= */
+var FRAMES=[["Can I get ~ ?","받을 수 있을까요"],["Can I ~ ?","해도 될까요"],["I'll have ~","이걸로 주세요"],["Where's the ~ ?","어디예요"],["How much is ~ ?","얼마예요"],["The ~ isn't working","고장났어요"],["Something's wrong with ~","뭔가 이상해요"],["Sorry? → slower → write it down","3단 사다리"]];
+function renderSent(){
+  var byDay={};CARDS.forEach(function(c){(byDay[c.d]=byDay[c.d]||[]).push(c);});
+  var html='<div class="card"><div class="lbl">틀 8개 — 문장 36개보다 이게 먼저다</div>'+
+    FRAMES.map(function(f){return '<span class="pill">'+esc(f[0])+'</span>';}).join("")+
+    '<div class="guide" style="margin-top:10px">뒤에 명사만 갈아끼우면 대부분이 처리된다. 문장을 새로 만들지 마라.</div></div>';
+  Object.keys(byDay).sort(function(a,b){return a-b;}).forEach(function(d){
+    html+='<div class="card"><div class="lbl">Day '+d+' · '+esc(byDay[d][0].t)+'</div><table>'+
+      byDay[d].map(function(c){return "<tr><td><b>"+esc(c.en)+"</b><br><span class='yeon'>"+esc(c.yeon)+"</span></td></tr>";}).join("")+
+      '</table></div>';
+  });
+  el("main").innerHTML=html;
+}
+
+/* ================= 🔊 소리 탭 ================= */
+var SOUNDS=[
+ ["연음 (Linking)","앞 단어 끝소리 + 뒷 단어 첫소리가 이어진다","Can I get a water?","캐나이 게러 워러"],
+ ["유음 (Flap T/D)","혀를 윗잇몸에 살짝 튕기듯. T가 ㄹ로","get a / medium / cutting","게러 / 미리엄 / 커링"],
+ ["끝 Z 유성음","S와 혀 위치는 같고 목만 울린다","says / goes / bags / rooms","쎄즈 / 고우즈 / 백즈 / 룸즈"],
+ ["자음군 탈락","또박또박 발음하려는 노력이 오히려 실패를 만든다","made me / don't know / kept me","메이미 / 돈 노 / 켑미"],
+ ["1음절을 2음절로 늘리지 않기","한국어는 자음 뒤에 모음을 붙이는 습관이 있다","card / bag / cash","카알드 / 백 / 캐쉬"],
+ ["H 생략","숨 뱉듯. 목에 손 대면 안 울린다","Could you have it?","쿠쥬 애빗"],
+ ["TH 혀 위치","혀를 앞니 사이에 끼웠다 뺀다","with / thanks / three","위드 / 땡스 / 쓰리"],
+ ["모음 강조","모음이 겹치면 다 살려 길게","cheese / school","치이즈 / 스쿠울"]
+];
+function renderSound(){
+  el("main").innerHTML='<div class="card"><div class="guide">안 들리는 순간은 <b>원어민이 부드럽게 흘려 발음할 때</b>다. 어휘 문제가 아니라 뭉개진 소리를 복원 못 하는 것이다.</div></div>'+
+   SOUNDS.map(function(s,i){
+    return '<div class="card"><div style="font-weight:800;color:#fff">'+esc(s[0])+'</div>'+
+      '<div class="guide">'+esc(s[1])+'</div>'+
+      '<div class="en" style="font-size:17px;margin-top:8px">'+esc(s[2])+'</div><div class="yeon">'+esc(s[3])+'</div>'+
+      '<div class="row"><button class="btn" data-s="'+i+'">▶ 듣기</button><button class="btn" data-w="'+i+'">🐢 천천히</button></div></div>';
+   }).join("");
+  Array.prototype.forEach.call(el("main").querySelectorAll("[data-s]"),function(b){b.onclick=function(){speak(SOUNDS[+b.getAttribute("data-s")][2]);};});
+  Array.prototype.forEach.call(el("main").querySelectorAll("[data-w]"),function(b){b.onclick=function(){speakSlow(SOUNDS[+b.getAttribute("data-w")][2]);};});
+}
+
+/* ================= 📖 사용법 탭 ================= */
+function renderHelp(){
+  var ds=Object.keys(LOG.days).sort(), open=ds.length;
+  var allCards=ds.reduce(function(a,d){return a+LOG.days[d].cards.length;},0);
+  var allOk=ds.reduce(function(a,d){return a+LOG.days[d].cards.filter(function(c){return c.out;}).length;},0);
+  var secs=[];ds.forEach(function(d){LOG.days[d].cards.forEach(function(c){secs.push(c.sec);});});
+  var avg=secs.length?Math.round(secs.reduce(function(a,b){return a+b;},0)/secs.length*10)/10:0;
+
+  el("main").innerHTML=
+    '<div class="card"><div class="lbl">하루 15분, 이 순서</div>'+
+      '<p>1. 상대 말을 <b>먼저 소리로</b> 듣는다<br>2. 정답 보기 전에 <b>소리 내서</b> 말한다 — 안 나와도 3초 버티기<br>3. 막히면 🦴 뼈대 힌트 — 틀만 잡고 다시 시도<br>4. 정답 확인 → <b>나왔다 / 안 나왔다</b> 솔직하게<br>5. 안 나온 건 오늘 안에 한 번 더 나온다</p>'+
+      '<div class="hint">외우는 게 목적이 아니다. <b>같은 생각을 더 빨리 하는 것</b>이 목적이다.</div></div>'+
+    '<div class="card"><div class="lbl">내 기록 (자동 저장 · 아무것도 안 눌러도 됨)</div>'+
+      '<div class="stat"><div><b>'+open+'</b><span>연 날</span></div><div><b>'+allOk+"/"+allCards+'</b><span>나왔다</span></div><div><b>'+avg+'초</b><span>평균</span></div></div>'+
+      '<table><tr><th>날짜</th><th>Day</th><th>나왔다</th><th>평균초</th></tr>'+
+      ds.slice(-14).reverse().map(function(d){
+        var r=LOG.days[d],n=r.cards.length,o=r.cards.filter(function(c){return c.out;}).length;
+        var a=n?Math.round(r.cards.reduce(function(x,y){return x+y.sec;},0)/n*10)/10:0;
+        return "<tr><td>"+d.slice(5)+"</td><td>"+(r.day||"-")+"</td><td>"+o+"/"+n+"</td><td>"+a+"</td></tr>";
+      }).join("")+'</table>'+
+      (open?'':'<div class="guide">아직 기록이 없다. 훈련 탭에서 한 장이라도 하면 여기 쌓인다.</div>')+
+      '<button class="btn" id="btnCopy">📋 코치에게 보여줄 기록 복사</button>'+
+      '<div class="guide">필수 아님. 안 눌러도 기록은 폰에 계속 쌓인다.</div></div>'+
+    '<div class="card"><div class="lbl">버전</div><p>'+VERSION+' · 시작 '+EPOCH+' · 출국 '+DEP+'<br><span class="muted">출국일이 되면 훈련 탭이 자동으로 밤 복기로 바뀐다.</span></p></div>';
+
+  el("btnCopy").onclick=function(){
+    var txt="[영어 드릴 "+VERSION+"] "+today()+"\n"+ds.slice(-14).map(function(d){
+      var r=LOG.days[d];
+      return d+" Day"+(r.day||"-")+" "+r.cards.filter(function(c){return c.out;}).length+"/"+r.cards.length+
+        " 평균"+(r.cards.length?Math.round(r.cards.reduce(function(x,y){return x+y.sec;},0)/r.cards.length*10)/10:0)+"초"+
+        (r.cards.filter(function(c){return !c.out;}).length?" | 안나옴: "+r.cards.filter(function(c){return !c.out;}).map(function(c){return c.id;}).join(","):"");
+    }).join("\n");
+    var dk=Object.keys(LOG.debrief||{});
+    if(dk.length) txt+="\n[밤 복기]\n"+dk.slice(-14).map(function(d){var x=LOG.debrief[d];return d+" 못한말:"+(x.stuck||"-")+" / 못알아들음:"+(x.missed||"-");}).join("\n");
+    try{navigator.clipboard.writeText(txt);el("btnCopy").textContent="복사됨 ✓";}
+    catch(e){var ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");el("btnCopy").textContent="복사됨 ✓";}catch(e2){}document.body.removeChild(ta);}
+  };
+}
+
+/* ---------- 라우터 ---------- */
+function render(){
+  renderHeader(); renderNav();
+  if(TAB==="train") renderTrain();
+  else if(TAB==="subj") renderSubj();
+  else if(TAB==="sent") renderSent();
+  else if(TAB==="sound") renderSound();
+  else renderHelp();
+  window.scrollTo(0,0);
+}
+todayRec(); saveLog(LOG);   // 앱을 연 것 자체를 기록 (실행률)
+render();
+</script>
+</body>
+</html>
